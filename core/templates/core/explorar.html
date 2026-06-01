@@ -1,0 +1,229 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block title %}Explorar{% endblock %}
+{% block back_button %}
+<a href="{% url 'oyente_dashboard' %}" class="back-btn"><svg width="18" height="18" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/></svg></a>
+{% endblock %}
+{% block content %}
+<div class="page-enter" style="padding-bottom:20px">
+
+{% if request.GET.q %}
+  <div class="d-flex align-items-center gap-3 mb-5">
+    <h3 class="fw-bold mb-0">Resultados para</h3>
+    <span style="background:var(--cyan-dim);border:1px solid var(--cyan-border);
+                 color:var(--cyan);border-radius:50px;padding:5px 18px;
+                 font-weight:700;font-size:1rem">"{{ request.GET.q }}"</span>
+  </div>
+
+  <div class="row g-4 mb-5">
+    <div class="col-lg-5">
+      <h4 class="fw-bold mb-3">Resultado principal</h4>
+      <a href="{% url 'album' %}" class="text-decoration-none">
+        <div class="top-result-card">
+          <span class="top-result-badge">{{ resultado_principal.tipo|default:"Álbum" }}</span>
+          <img src="https://placehold.co/110x110/0d1422/00e5ff?text={{ resultado_principal.titulo|slice:':1'|upper|default:'Q' }}" alt="Cover">
+          <h2 class="fw-bold mb-1" style="color:var(--txt-1);font-size:1.8rem;letter-spacing:-.03em">
+            {{ resultado_principal.titulo|title|default:request.GET.q|title }}
+          </h2>
+          <p style="color:var(--txt-2);margin:0;font-size:.9rem">{{ resultado_principal.subtitulo|default:"Artista Local • VibeSync" }}</p>
+          <div style="margin-top:20px">
+            <button class="btn-upload-master" style="font-size:.8rem;padding:11px 22px">
+              ▶ Reproducir
+            </button>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-lg-7">
+      <h4 class="fw-bold mb-3">Canciones</h4>
+      <div class="d-flex flex-column gap-1">
+        {% for cancion in canciones %}
+        <div class="track-list-item">
+          <img src="https://placehold.co/40x40/0d1422/00e5ff?text={{ cancion.titulo|slice:':1'|upper }}" alt="Track">
+          <div style="flex:1;min-width:0">
+            <div style="font-weight:700;font-size:.92rem;color:var(--txt-1)">{{ cancion.titulo }}</div>
+            <div style="font-size:.8rem;color:var(--txt-2)">{{ cancion.artista }}</div>
+          </div>
+          <span style="font-family:var(--font-mono);font-size:.82rem;color:var(--txt-3)">{{ cancion.duracion }}</span>
+        </div>
+        {% empty %}
+        <div class="track-list-item"><img src="https://placehold.co/40x40/0d1422/00e5ff?text=P" alt=""><div style="flex:1"><div style="font-weight:700;font-size:.92rem;color:var(--txt-1)">{{ request.GET.q }} (Remix)</div><div style="font-size:.8rem;color:var(--txt-2)">Artista Relacionado</div></div><span style="font-family:var(--font-mono);font-size:.82rem;color:var(--txt-3)">3:45</span></div>
+        <div class="track-list-item"><img src="https://placehold.co/40x40/1a0d2e/a855f7?text=A" alt=""><div style="flex:1"><div style="font-weight:700;font-size:.92rem;color:var(--txt-1)">{{ request.GET.q }} (Acústico)</div><div style="font-size:.8rem;color:var(--txt-2)">Artista Relacionado</div></div><span style="font-family:var(--font-mono);font-size:.82rem;color:var(--txt-3)">4:10</span></div>
+        <div class="track-list-item"><img src="https://placehold.co/40x40/0d2210/22d3a5?text=L" alt=""><div style="flex:1"><div style="font-weight:700;font-size:.92rem;color:var(--txt-1)">{{ request.GET.q }} Live</div><div style="font-size:.8rem;color:var(--txt-2)">En vivo en Quito</div></div><span style="font-family:var(--font-mono);font-size:.82rem;color:var(--txt-3)">5:22</span></div>
+        <div class="track-list-item"><img src="https://placehold.co/40x40/1c1000/fbbf24?text=D" alt=""><div style="flex:1"><div style="font-weight:700;font-size:.92rem;color:var(--txt-1)">{{ request.GET.q }} Demo</div><div style="font-size:.8rem;color:var(--txt-2)">Demos 2026</div></div><span style="font-family:var(--font-mono);font-size:.82rem;color:var(--txt-3)">2:58</span></div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div class="mb-5">
+    <div class="section-badge mb-2">Relacionado</div>
+    <h4 class="fw-bold mb-1">Más de este artista</h4>
+    <div class="scroll-row">
+      {% for album in albumes_relacionados %}
+      <a href="{% url 'album' %}" class="text-decoration-none">
+        <div class="music-card"><div class="img-wrapper"><img src="https://placehold.co/300x300/0d1422/00e5ff?text={{ album.titulo|slice:':1'|upper }}" alt=""><div class="play-btn-overlay"><svg width="22" height="22" fill="currentColor" viewBox="0 0 16 16"><path d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/></svg></div></div><h6>{{ album.titulo }}</h6><small>{{ album.tipo }}</small></div>
+      </a>
+      {% empty %}
+      <a href="{% url 'album' %}" class="text-decoration-none"><div class="music-card"><div class="img-wrapper"><img src="https://placehold.co/300x300/0d1422/00e5ff?text=P" alt=""><div class="play-btn-overlay"><svg width="22" height="22" fill="currentColor" viewBox="0 0 16 16"><path d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/></svg></div></div><h6>Primer Disco</h6><small>Álbum</small></div></a>
+      <a href="{% url 'album' %}" class="text-decoration-none"><div class="music-card"><div class="img-wrapper"><img src="https://placehold.co/300x300/1a0d2e/a855f7?text=L" alt=""><div class="play-btn-overlay"><svg width="22" height="22" fill="currentColor" viewBox="0 0 16 16"><path d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/></svg></div></div><h6>Lados B</h6><small>EP</small></div></a>
+      {% endfor %}
+    </div>
+  </div>
+
+{% else %}
+  <div class="mb-4">
+    <div class="section-badge mb-2">Búsquedas</div>
+    <h3 class="fw-bold mb-1">Búsquedas recientes</h3>
+  </div>
+
+  <div id="history-wrapper">
+    <div id="search-history-container" class="d-flex flex-column gap-1 mb-4">
+      
+      {% for item in historial_busquedas %}
+      <div class="recent-search-item" style="animation:fade-up .4s {{ forloop.counter }}0ms both; cursor: pointer;"
+           onclick="if(!event.target.classList.contains('btn-delete-search')) window.location.href='{% if item.tipo_ui == 'artista' %}{% url 'artista' %}{% elif item.tipo_ui == 'album' %}{% url 'album' %}{% else %}#{% endif %}'">
+        
+        <div class="recent-search-info {% if item.tipo_ui == 'artista' %}artist{% endif %}">
+          <img src="https://placehold.co/48x48/{{ item.color|default:'0d1422' }}/00e5ff?text={{ item.inicial|default:'M' }}" alt="">
+          <div>
+            <div style="font-weight:700;font-size:.92rem;color:var(--txt-1)">{{ item.titulo }}</div>
+            <div style="font-size:.8rem;color:var(--txt-2)">{{ item.subtitulo }}</div>
+          </div>
+        </div>
+        <button class="btn-delete-search" title="Eliminar">×</button>
+      </div>
+      
+      {% empty %}
+      <div class="recent-search-item" style="animation:fade-up .4s .1s both; cursor: pointer;" onclick="if(!event.target.classList.contains('btn-delete-search')) window.location.href='{% url 'album' %}'"><div class="recent-search-info"><img src="https://placehold.co/48x48/0d1422/00e5ff?text=S" alt=""><div><div style="font-weight:700;font-size:.92rem;color:var(--txt-1)">Synthwave Andino Mix</div><div style="font-size:.8rem;color:var(--txt-2)">Canción • VibeSync</div></div></div><button class="btn-delete-search">×</button></div>
+      <div class="recent-search-item" style="animation:fade-up .4s .15s both; cursor: pointer;" onclick="if(!event.target.classList.contains('btn-delete-search')) window.location.href='{% url 'artista' %}'"><div class="recent-search-info artist"><img src="https://placehold.co/48x48/0d2210/22d3a5?text=G" alt="" style="border-radius:50%"><div><div style="font-weight:700;font-size:.92rem;color:var(--txt-1)">Guardarraya</div><div style="font-size:.8rem;color:var(--txt-2)">Artista</div></div></div><button class="btn-delete-search">×</button></div>
+      <div class="recent-search-item" style="animation:fade-up .4s .2s both; cursor: pointer;" onclick="if(!event.target.classList.contains('btn-delete-search')) window.location.href='{% url 'album' %}'"><div class="recent-search-info"><img src="https://placehold.co/48x48/1c1000/fbbf24?text=N" alt=""><div><div style="font-weight:700;font-size:.92rem;color:var(--txt-1)">Noches de Quito</div><div style="font-size:.8rem;color:var(--txt-2)">Álbum</div></div></div><button class="btn-delete-search">×</button></div>
+      <div class="recent-search-item" style="animation:fade-up .4s .25s both; cursor: pointer;" onclick="if(!event.target.classList.contains('btn-delete-search')) window.location.href='{% url 'artista' %}'"><div class="recent-search-info artist"><img src="https://placehold.co/48x48/1a0d2e/a855f7?text=L" alt="" style="border-radius:50%"><div><div style="font-weight:700;font-size:.92rem;color:var(--txt-1)">La Máquina Camaleón</div><div style="font-size:.8rem;color:var(--txt-2)">Artista</div></div></div><button class="btn-delete-search">×</button></div>
+      {% endfor %}
+
+    </div>
+
+    <div class="text-center mt-2">
+      <button id="clear-history-btn"
+              style="background:none;border:1px solid var(--b2);color:var(--txt-3);
+                     border-radius:50px;padding:8px 24px;font-family:var(--font);font-size:.85rem;
+                     cursor:pointer;transition:all .25s"
+              onmouseover="this.style.borderColor='var(--rose)';this.style.color='var(--rose)'"
+              onmouseout="this.style.borderColor='var(--b2)';this.style.color='var(--txt-3)'">
+        🗑️ Eliminar historial
+      </button>
+    </div>
+  </div>
+
+  <div id="empty-history-message" style="display:none;text-align:center;padding:60px 20px">
+    <div style="font-size:4rem;margin-bottom:16px;animation:float 4s ease-in-out infinite">🔍</div>
+    <h4 class="fw-bold mb-2">Tu historial está vacío</h4>
+    <p style="color:var(--txt-2);max-width:360px;margin:0 auto;font-size:.95rem;line-height:1.6">
+      Busca canciones, artistas o géneros y llena este espacio con buena vibra.
+    </p>
+  </div>
+
+  <div class="mt-5">
+    <div class="section-badge mb-2">Categorías</div>
+    <h4 class="fw-bold mb-4">Explorar por género</h4>
+    <div class="row g-3">
+      {% for genre_data in genre_cards %}
+      {% empty %}
+      {% with pairs="🌌,Synthwave Andino,0d1422,00e5ff;🎸,Indie Rock,0d0d20,a855f7;🎛️,House EDM,001a1a,22d3a5;🎤,Pop Urbano,1a0d00,fbbf24;🎺,Jazz Fusion,0d1a00,60a5fa;🏔️,Folk Andino,1a0d2e,fb7185" %}
+      <div class="col-6 col-md-4">
+        <a href="{% url 'explorar' %}?q=synthwave" class="text-decoration-none">
+          <div style="height:90px;border-radius:16px;background:linear-gradient(135deg,#0d1422,#001a1a);
+                      border:1px solid var(--b1);display:flex;align-items:center;padding:0 20px;gap:14px;
+                      position:relative;overflow:hidden;transition:all .3s;cursor:pointer"
+               onmouseover="this.style.transform='translateY(-3px)';this.style.borderColor='var(--cyan-border)';this.style.boxShadow='0 12px 30px rgba(0,0,0,.4)'"
+               onmouseout="this.style.transform='';this.style.borderColor='var(--b1)';this.style.boxShadow=''">
+            <div style="position:absolute;right:-10px;bottom:-10px;font-size:4rem;opacity:.12;line-height:1">🌌</div>
+            <span style="font-size:1.8rem;position:relative;z-index:2">🌌</span>
+            <div style="position:relative;z-index:2"><div style="font-weight:700">Synthwave Andino</div><div style="font-size:.78rem;color:var(--txt-3)">8 géneros</div></div>
+          </div>
+        </a>
+      </div>
+      <div class="col-6 col-md-4">
+        <a href="{% url 'explorar' %}?q=indie+rock" class="text-decoration-none">
+          <div style="height:90px;border-radius:16px;background:linear-gradient(135deg,#0d0d20,#1a0d2e);border:1px solid var(--b1);display:flex;align-items:center;padding:0 20px;gap:14px;position:relative;overflow:hidden;transition:all .3s;cursor:pointer" onmouseover="this.style.transform='translateY(-3px)';this.style.borderColor='rgba(168,85,247,.4)'" onmouseout="this.style.transform='';this.style.borderColor='var(--b1)'">
+            <div style="position:absolute;right:-10px;bottom:-10px;font-size:4rem;opacity:.12;line-height:1">🎸</div>
+            <span style="font-size:1.8rem;position:relative;z-index:2">🎸</span>
+            <div style="position:relative;z-index:2"><div style="font-weight:700">Indie Rock</div><div style="font-size:.78rem;color:var(--txt-3)">7 géneros</div></div>
+          </div>
+        </a>
+      </div>
+      <div class="col-6 col-md-4">
+        <a href="{% url 'explorar' %}?q=house+edm" class="text-decoration-none">
+          <div style="height:90px;border-radius:16px;background:linear-gradient(135deg,#001a1a,#0d2210);border:1px solid var(--b1);display:flex;align-items:center;padding:0 20px;gap:14px;position:relative;overflow:hidden;transition:all .3s;cursor:pointer" onmouseover="this.style.transform='translateY(-3px)';this.style.borderColor='rgba(34,211,165,.4)'" onmouseout="this.style.transform='';this.style.borderColor='var(--b1)'">
+            <div style="position:absolute;right:-10px;bottom:-10px;font-size:4rem;opacity:.12;line-height:1">🎛️</div>
+            <span style="font-size:1.8rem;position:relative;z-index:2">🎛️</span>
+            <div style="position:relative;z-index:2"><div style="font-weight:700">House / EDM</div><div style="font-size:.78rem;color:var(--txt-3)">6 géneros</div></div>
+          </div>
+        </a>
+      </div>
+      <div class="col-6 col-md-4">
+        <a href="{% url 'explorar' %}?q=pop+urbano" class="text-decoration-none">
+          <div style="height:90px;border-radius:16px;background:linear-gradient(135deg,#1a0d00,#1c1000);border:1px solid var(--b1);display:flex;align-items:center;padding:0 20px;gap:14px;position:relative;overflow:hidden;transition:all .3s;cursor:pointer" onmouseover="this.style.transform='translateY(-3px)';this.style.borderColor='rgba(251,191,36,.4)'" onmouseout="this.style.transform='';this.style.borderColor='var(--b1)'">
+            <div style="position:absolute;right:-10px;bottom:-10px;font-size:4rem;opacity:.12;line-height:1">🎤</div>
+            <span style="font-size:1.8rem;position:relative;z-index:2">🎤</span>
+            <div style="position:relative;z-index:2"><div style="font-weight:700">Pop Urbano</div><div style="font-size:.78rem;color:var(--txt-3)">5 géneros</div></div>
+          </div>
+        </a>
+      </div>
+      <div class="col-6 col-md-4">
+        <a href="{% url 'explorar' %}?q=jazz" class="text-decoration-none">
+          <div style="height:90px;border-radius:16px;background:linear-gradient(135deg,#0d1a00,#0a1228);border:1px solid var(--b1);display:flex;align-items:center;padding:0 20px;gap:14px;position:relative;overflow:hidden;transition:all .3s;cursor:pointer" onmouseover="this.style.transform='translateY(-3px)';this.style.borderColor='rgba(96,165,250,.4)'" onmouseout="this.style.transform='';this.style.borderColor='var(--b1)'">
+            <div style="position:absolute;right:-10px;bottom:-10px;font-size:4rem;opacity:.12;line-height:1">🎺</div>
+            <span style="font-size:1.8rem;position:relative;z-index:2">🎺</span>
+            <div style="position:relative;z-index:2"><div style="font-weight:700">Jazz Fusion</div><div style="font-size:.78rem;color:var(--txt-3)">4 géneros</div></div>
+          </div>
+        </a>
+      </div>
+      <div class="col-6 col-md-4">
+        <a href="{% url 'explorar' %}?q=folk+andino" class="text-decoration-none">
+          <div style="height:90px;border-radius:16px;background:linear-gradient(135deg,#1a0d2e,#0d1a2a);border:1px solid var(--b1);display:flex;align-items:center;padding:0 20px;gap:14px;position:relative;overflow:hidden;transition:all .3s;cursor:pointer" onmouseover="this.style.transform='translateY(-3px)';this.style.borderColor='rgba(251,113,133,.4)'" onmouseout="this.style.transform='';this.style.borderColor='var(--b1)'">
+            <div style="position:absolute;right:-10px;bottom:-10px;font-size:4rem;opacity:.12;line-height:1">🏔️</div>
+            <span style="font-size:1.8rem;position:relative;z-index:2">🏔️</span>
+            <div style="position:relative;z-index:2"><div style="font-weight:700">Folk Andino</div><div style="font-size:.78rem;color:var(--txt-3)">3 géneros</div></div>
+          </div>
+        </a>
+      </div>
+      {% endwith %}
+      {% endfor %}
+    </div>
+  </div>
+{% endif %}
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const historyContainer = document.getElementById('search-history-container');
+  const emptyMessage     = document.getElementById('empty-history-message');
+  const clearBtn         = document.getElementById('clear-history-btn');
+  const historyWrapper   = document.getElementById('history-wrapper');
+
+  function checkEmpty() {
+    if (historyContainer && historyContainer.children.length === 0) {
+      if (historyWrapper) historyWrapper.style.display = 'none';
+      if (emptyMessage)   emptyMessage.style.display = 'block';
+    }
+  }
+
+  if (historyContainer) {
+    checkEmpty();
+    historyContainer.addEventListener('click', e => {
+      if (e.target.classList.contains('btn-delete-search')) {
+        const item = e.target.closest('.recent-search-item');
+        item.style.transition = 'opacity .3s, transform .3s';
+        item.style.opacity = '0'; item.style.transform = 'translateX(20px)';
+        setTimeout(() => { item.remove(); checkEmpty(); }, 320);
+      }
+    });
+    if (clearBtn) clearBtn.addEventListener('click', () => {
+      historyContainer.innerHTML = ''; checkEmpty();
+    });
+  }
+});
+</script>
+{% endblock %}

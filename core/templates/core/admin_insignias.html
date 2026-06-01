@@ -1,0 +1,54 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block title %}Gestionar Insignias{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-0 pb-5">
+    
+    <div class="d-flex justify-content-between align-items-center mb-5 mt-2 flex-wrap gap-3">
+        <div>
+            <span class="text-uppercase text-danger fw-bold" style="letter-spacing: 2px; font-size: 0.8rem;">Gamificación</span>
+            <h2 class="fw-bold mb-0 text-white">Gestionar Insignias</h2>
+        </div>
+        <button class="btn btn-outline-info rounded-pill px-4 fw-bold">
+            + Crear Nueva Insignia
+        </button>
+    </div>
+
+    <div class="row g-4" id="badges-container">
+        {% for insignia in insignias %}
+        <div class="col-6 col-md-4 col-lg-3 badge-card-col">
+            <div class="badge-card position-relative" style="background-color: var(--bg-panel); border: 1px solid rgba(255,255,255,0.05); padding: 20px; border-radius: 16px; text-align: center;">
+                
+                <div class="position-absolute top-0 end-0 p-2 d-flex gap-1">
+                    <button class="btn btn-sm btn-outline-light border-0" title="Editar">✏️</button>
+                    <button class="btn btn-sm btn-outline-danger border-0 btn-delete-badge" title="Eliminar">✖</button>
+                </div>
+
+                <div class="badge-icon-wrapper mx-auto mb-3" style="width: 70px; height: 70px; background: rgba(0, 229, 255, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem;">
+                    {{ insignia.icono }}
+                </div>
+                <h6 class="fw-bold text-white mb-1 badge-name">{{ insignia.nombre }}</h6>
+                <small class="text-muted">{{ insignia.descripcion }}</small>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+document.getElementById('badges-container').addEventListener('click', function(e) {
+    const btn = e.target.closest('.btn-delete-badge');
+    if (btn) {
+        const col = btn.closest('.badge-card-col');
+        const name = col.querySelector('.badge-name').textContent;
+        if(confirm(`¿Deseas eliminar la insignia "${name}" del sistema?`)) {
+            col.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+            col.style.opacity = '0';
+            col.style.transform = 'scale(0.9)';
+            setTimeout(() => col.remove(), 300);
+        }
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VibeSync — Bienvenido</title>
+  {% load static %}
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}?v=2.0">
+  <style>
+    /* ── Auth Page Specific ── */
+    body { background: var(--bg-void); overflow-x: hidden; overflow-y: auto; }
+
+    .auth-wrapper {
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden;
+      background: radial-gradient(ellipse 80% 80% at 20% 40%, rgba(0,229,255,.06) 0%, transparent 60%),
+                  radial-gradient(ellipse 60% 60% at 80% 70%, rgba(168,85,247,.05) 0%, transparent 60%),
+                  var(--bg-void);
+      padding: 20px;
+    }
+
+    /* Animated grid lines */
+    .auth-grid {
+      position: absolute; inset: 0; pointer-events: none;
+      background-image:
+        linear-gradient(rgba(0,229,255,.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,229,255,.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+      mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black 30%, transparent 100%);
+      animation: gradient-drift 20s ease infinite;
+    }
+
+    /* Floating orbs */
+    .orb {
+      position: absolute; border-radius: 50%; filter: blur(80px);
+      animation: float 8s ease-in-out infinite;
+      pointer-events: none;
+    }
+    .orb-1 { width: 400px; height: 400px; background: rgba(0,229,255,.06); top: -100px; left: -100px; animation-duration: 9s; }
+    .orb-2 { width: 300px; height: 300px; background: rgba(168,85,247,.07); bottom: -80px; right: -80px; animation-duration: 7s; animation-delay: -3s; }
+    .orb-3 { width: 200px; height: 200px; background: rgba(251,191,36,.04); top: 60%; left: 20%; animation-duration: 11s; animation-delay: -5s; }
+
+    /* Particles */
+    .particle {
+      position: absolute; border-radius: 50%;
+      background: var(--cyan);
+      animation: particle-float var(--dur) ease-in-out infinite;
+      animation-delay: var(--delay);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* Card */
+    .auth-card {
+      background: rgba(10, 15, 26, 0.88);
+      backdrop-filter: blur(28px) saturate(160%);
+      -webkit-backdrop-filter: blur(28px) saturate(160%);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 28px;
+      padding: 52px 48px;
+      width: 100%; max-width: 470px;
+      box-shadow: 0 40px 100px rgba(0,0,0,.7), 0 0 0 1px rgba(255,255,255,.03);
+      position: relative; z-index: 10;
+      animation: scale-in 0.6s var(--ease-bounce);
+    }
+    .auth-card::before {
+      content: '';
+      position: absolute; top: 0; left: 15%; right: 15%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--cyan) 30%, var(--purple) 70%, transparent);
+      border-radius: 0 0 2px 2px;
+    }
+
+    /* Logo */
+    .auth-logo-wrap {
+      width: 64px; height: 64px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(0,229,255,.2), rgba(168,85,247,.15));
+      border: 1px solid var(--cyan-border);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 20px;
+      box-shadow: 0 0 30px var(--cyan-dim);
+      animation: float 4s ease-in-out infinite;
+    }
+    .auth-logo-wrap img { width: 36px; height: 36px; object-fit: contain; }
+
+    .auth-brand-name {
+      font-size: 2rem; font-weight: 900;
+      letter-spacing: -0.04em;
+      background: linear-gradient(135deg, #fff 50%, var(--cyan));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .auth-tagline { color: var(--txt-3); font-size: .85rem; letter-spacing: .05em; }
+
+    /* Toggle */
+    .auth-toggle {
+      display: flex;
+      background: rgba(0,0,0,.35);
+      border: 1px solid var(--b1);
+      border-radius: 50px;
+      padding: 5px;
+      margin: 28px 0 32px;
+    }
+    .auth-toggle-btn {
+      flex: 1; border: none; background: transparent;
+      color: var(--txt-3); padding: 11px;
+      border-radius: 50px;
+      font-family: var(--font); font-weight: 700; font-size: .92rem;
+      cursor: pointer; transition: all .3s var(--ease-out);
+    }
+    .auth-toggle-btn.active {
+      background: linear-gradient(135deg, var(--cyan), #0097a7);
+      color: #000;
+      box-shadow: 0 4px 18px var(--cyan-glow);
+    }
+
+    /* Forms */
+    .auth-form { display: none; }
+    .auth-form.active { display: block; animation: fade-up .35s var(--ease-out) both; }
+
+    .field-label {
+      font-size: .72rem; font-weight: 800;
+      letter-spacing: .12em; text-transform: uppercase;
+      color: var(--txt-3); display: block; margin-bottom: 8px;
+    }
+    .auth-input {
+      width: 100%;
+      background: rgba(255,255,255,.04);
+      border: 1px solid var(--b2);
+      color: var(--txt-1);
+      border-radius: 12px;
+      padding: 13px 18px;
+      font-family: var(--font); font-size: .95rem;
+      transition: all .25s;
+      outline: none;
+    }
+    .auth-input:focus {
+      border-color: var(--cyan-border);
+      background: rgba(255,255,255,.06);
+      box-shadow: 0 0 0 3px var(--cyan-dim);
+    }
+    .auth-input::placeholder { color: var(--txt-3); }
+
+    .input-wrapper { position: relative; }
+    .input-icon {
+      position: absolute; left: 15px; top: 50%;
+      transform: translateY(-50%);
+      color: var(--txt-3); pointer-events: none;
+    }
+    .input-wrapper .auth-input { padding-left: 44px; }
+
+    /* Password toggle eye */
+    .eye-toggle {
+      position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; color: var(--txt-3);
+      cursor: pointer; padding: 4px;
+      transition: color .2s;
+    }
+    .eye-toggle:hover { color: var(--cyan); }
+
+    /* Role select cards */
+    .role-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 4px 0 20px; }
+    .role-card {
+      border: 1.5px solid var(--b2);
+      border-radius: 14px;
+      padding: 16px 14px;
+      text-align: center;
+      cursor: pointer;
+      transition: all .25s var(--ease-out);
+      background: rgba(255,255,255,.02);
+      user-select: none;
+    }
+    .role-card:hover { border-color: var(--cyan-border); background: var(--cyan-dim); }
+    .role-card.selected { border-color: var(--cyan); background: var(--cyan-dim); box-shadow: 0 0 15px var(--cyan-dim); }
+    .role-card .role-icon { font-size: 1.8rem; margin-bottom: 6px; }
+    .role-card .role-name { font-size: .82rem; font-weight: 700; color: var(--txt-2); }
+    .role-card.selected .role-name { color: var(--cyan); }
+
+    /* Submit btn */
+    .auth-btn-submit {
+      width: 100%;
+      background: linear-gradient(135deg, var(--cyan) 0%, #0096a6 100%);
+      color: #000; border: none;
+      padding: 15px;
+      border-radius: 14px;
+      font-family: var(--font); font-weight: 800;
+      font-size: 1rem; letter-spacing: .02em;
+      cursor: pointer; margin-top: 12px;
+      transition: all .3s var(--ease-bounce);
+      position: relative; overflow: hidden;
+    }
+    .auth-btn-submit::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: rgba(255,255,255,.15);
+      opacity: 0; transition: opacity .2s;
+    }
+    .auth-btn-submit:hover { transform: translateY(-3px); box-shadow: 0 14px 35px var(--cyan-glow); }
+    .auth-btn-submit:hover::after { opacity: 1; }
+    .auth-btn-submit:active { transform: translateY(-1px); }
+
+    /* Social divider */
+    .auth-divider {
+      display: flex; align-items: center; gap: 12px;
+      margin: 22px 0;
+      color: var(--txt-3); font-size: .8rem;
+    }
+    .auth-divider::before, .auth-divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--b2);
+    }
+
+    /* Forgot link */
+    .forgot-link {
+      color: var(--cyan); font-size: .8rem; font-weight: 600;
+      text-decoration: none; transition: opacity .2s;
+    }
+    .forgot-link:hover { opacity: .75; }
+
+    /* Loading spinner on submit */
+    .auth-btn-submit.loading {
+      pointer-events: none; opacity: .8;
+    }
+    .auth-btn-submit.loading::before {
+      content: '';
+      width: 18px; height: 18px;
+      border: 2.5px solid rgba(0,0,0,.3);
+      border-top-color: #000;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 10px;
+    }
+
+    /* Feature badges at bottom */
+    .auth-features {
+      display: flex; gap: 6px; flex-wrap: wrap;
+      justify-content: center; margin-top: 28px;
+    }
+    .auth-feature-badge {
+      font-size: .72rem; font-weight: 600;
+      color: var(--txt-3);
+      background: rgba(255,255,255,.04);
+      border: 1px solid var(--b1);
+      border-radius: 50px;
+      padding: 5px 12px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Animated background -->
+<div class="auth-wrapper">
+  <div class="auth-grid"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <!-- Floating particles -->
+  <div id="particles-container"></div>
+
+  <!-- Auth card -->
+  <div class="auth-card">
+
+    <!-- Logo -->
+    <div class="text-center mb-2">
+      <div class="auth-logo-wrap">
+        <img src="{% static 'img/logo_vibesync.png' %}" alt="VibeSync"
+             onerror="this.parentElement.innerHTML='<span style=\'font-size:1.8rem\'>🎵</span>'">
+      </div>
+      <h2 class="auth-brand-name mb-1">VibeSync</h2>
+      <p class="auth-tagline mb-0">La frecuencia de tu mundo</p>
+    </div>
+
+    <!-- Tab toggle -->
+    <div class="auth-toggle" role="tablist">
+      <button class="auth-toggle-btn active" id="btn-login" type="button">Ingresar</button>
+      <button class="auth-toggle-btn" id="btn-register" type="button">Crear Perfil</button>
+    </div>
+
+    <!-- ── LOGIN FORM ── -->
+    <div class="auth-form active" id="form-login">
+      <div class="mb-4">
+        <label class="field-label">Correo o usuario</label>
+        <div class="input-wrapper">
+          <svg class="input-icon" width="17" height="17" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4Zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2Zm13 2.383-4.708 2.825L15 11.105V5.383Zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741ZM1 11.105l4.708-2.897L1 5.383v5.722Z"/>
+          </svg>
+          <input type="text" id="login-user" class="auth-input" placeholder="ejemplo@correo.com" required>
+        </div>
+      </div>
+      <div class="mb-3">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <label class="field-label mb-0">Contraseña</label>
+          <a href="#" class="forgot-link">¿Olvidaste tu contraseña?</a>
+        </div>
+        <div class="input-wrapper">
+          <svg class="input-icon" width="17" height="17" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
+          </svg>
+          <input type="password" id="login-pass" class="auth-input" placeholder="••••••••••" required>
+          <button type="button" class="eye-toggle" onclick="toggleEye(this)">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/>
+              <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <button type="button" class="auth-btn-submit" id="btn-login-submit">
+        Iniciar Sesión
+      </button>
+      <div class="auth-divider">o continúa con</div>
+      <div class="d-flex gap-2">
+        <button type="button" class="btn w-50 py-2" style="background:rgba(255,255,255,.05);border:1px solid var(--b2);color:var(--txt-2);border-radius:12px;font-family:var(--font);font-weight:600;font-size:.85rem;transition:all .2s"
+                onmouseover="this.style.borderColor='var(--cyan-border)'" onmouseout="this.style.borderColor='var(--b2)'">
+          🌐 Google
+        </button>
+        <button type="button" class="btn w-50 py-2" style="background:rgba(255,255,255,.05);border:1px solid var(--b2);color:var(--txt-2);border-radius:12px;font-family:var(--font);font-weight:600;font-size:.85rem;transition:all .2s"
+                onmouseover="this.style.borderColor='var(--cyan-border)'" onmouseout="this.style.borderColor='var(--b2)'">
+          🍎 Apple
+        </button>
+      </div>
+    </div>
+
+    <!-- ── REGISTER FORM ── -->
+    <div class="auth-form" id="form-register">
+      <div class="mb-3">
+        <label class="field-label">Nombre de usuario</label>
+        <div class="input-wrapper">
+          <svg class="input-icon" width="17" height="17" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.029 10 8 10c-2.029 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
+          </svg>
+          <input type="text" id="reg-user" class="auth-input" placeholder="mateo_dev" required>
+        </div>
+      </div>
+      <div class="mb-3">
+        <label class="field-label">Correo electrónico</label>
+        <div class="input-wrapper">
+          <svg class="input-icon" width="17" height="17" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4Zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2Zm13 2.383-4.708 2.825L15 11.105V5.383Zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741ZM1 11.105l4.708-2.897L1 5.383v5.722Z"/>
+          </svg>
+          <input type="email" id="reg-email" class="auth-input" placeholder="ejemplo@correo.com" required>
+        </div>
+      </div>
+      <div class="mb-3">
+        <label class="field-label">Contraseña</label>
+        <div class="input-wrapper">
+          <svg class="input-icon" width="17" height="17" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
+          </svg>
+          <input type="password" id="reg-pass" class="auth-input" placeholder="Mín. 8 caracteres" required>
+          <button type="button" class="eye-toggle" onclick="toggleEye(this)">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/><path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/></svg>
+          </button>
+        </div>
+        <!-- Password strength -->
+        <div class="mt-2">
+          <div style="height:3px;background:var(--bg-raised);border-radius:3px;overflow:hidden">
+            <div id="pass-strength-bar" style="height:100%;width:0;border-radius:3px;transition:all .4s"></div>
+          </div>
+          <div id="pass-strength-label" style="font-size:.72rem;color:var(--txt-3);margin-top:4px"></div>
+        </div>
+      </div>
+      <div class="mb-3">
+        <label class="field-label mb-2">¿Cómo usarás VibeSync?</label>
+        <div class="role-grid">
+          <div class="role-card selected" data-role="oyente" onclick="selectRole(this)">
+            <div class="role-icon">🎧</div>
+            <div class="role-name">Oyente</div>
+          </div>
+          <div class="role-card" data-role="artista" onclick="selectRole(this)">
+            <div class="role-icon">🎸</div>
+            <div class="role-name">Artista</div>
+          </div>
+        </div>
+        <input type="hidden" id="reg-role" value="oyente">
+      </div>
+      <button type="button" class="auth-btn-submit" id="btn-register-submit">
+        Unirme a VibeSync
+      </button>
+      <p class="text-center mt-3 mb-0" style="font-size:.78rem;color:var(--txt-3)">
+        Al registrarte aceptas nuestros
+        <a href="#" style="color:var(--cyan);text-decoration:none">Términos</a> y
+        <a href="#" style="color:var(--cyan);text-decoration:none">Privacidad</a>
+      </p>
+    </div>
+
+    <!-- Feature badges -->
+    <div class="auth-features">
+      <span class="auth-feature-badge">🎵 Sin anuncios</span>
+      <span class="auth-feature-badge">🎧 Alta fidelidad</span>
+      <span class="auth-feature-badge">🏆 Gamificación</span>
+      <span class="auth-feature-badge">🎟️ Eventos</span>
+    </div>
+  </div>
+</div>
+
+<script>
+  /* ── Tab Switching ── */
+  const btnLogin    = document.getElementById('btn-login');
+  const btnRegister = document.getElementById('btn-register');
+  const formLogin   = document.getElementById('form-login');
+  const formRegister= document.getElementById('form-register');
+
+  btnLogin.addEventListener('click', () => {
+    btnLogin.classList.add('active');
+    btnRegister.classList.remove('active');
+    formLogin.classList.add('active');
+    formRegister.classList.remove('active');
+  });
+  btnRegister.addEventListener('click', () => {
+    btnRegister.classList.add('active');
+    btnLogin.classList.remove('active');
+    formRegister.classList.add('active');
+    formLogin.classList.remove('active');
+  });
+
+  /* ── Password Eye Toggle ── */
+  function toggleEye(btn) {
+    const input = btn.previousElementSibling;
+    const type  = input.type === 'password' ? 'text' : 'password';
+    input.type  = type;
+    btn.innerHTML = type === 'text'
+      ? `<svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M13.359 11.238C15.06 9.72 16 8 16 8s-3-5.5-8-5.5a7.028 7.028 0 0 0-2.79.588l.77.771A5.944 5.944 0 0 1 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.134 13.134 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755-.165.165-.337.328-.517.486l.708.709z"/><path d="M11.297 9.176a3.5 3.5 0 0 0-4.474-4.474l.823.823a2.5 2.5 0 0 1 2.829 2.829l.822.822zm-2.943 1.299.822.821a3.5 3.5 0 0 1-4.474-4.474l.823.823a2.5 2.5 0 0 0 2.829 2.83z"/><path d="M3.35 5.47c-.18.16-.353.322-.518.487A13.134 13.134 0 0 0 1.172 8l.195.288c.335.48.83 1.12 1.465 1.755C4.121 11.332 5.881 12.5 8 12.5c.716 0 1.39-.133 2.02-.36l.77.772A7.029 7.029 0 0 1 8 13.5C3 13.5 0 8 0 8s.939-1.721 2.641-3.238l.708.709zm10.296 8.884-12-12 .708-.708 12 12-.708.708z"/></svg>`
+      : `<svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/><path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/></svg>`;
+  }
+
+  /* ── Role selection ── */
+  function selectRole(el) {
+    document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    document.getElementById('reg-role').value = el.dataset.role;
+  }
+
+  /* ── Password Strength ── */
+  document.getElementById('reg-pass').addEventListener('input', function() {
+    const val = this.value;
+    const bar = document.getElementById('pass-strength-bar');
+    const lbl = document.getElementById('pass-strength-label');
+    let score = 0;
+    if (val.length >= 8) score++;
+    if (/[A-Z]/.test(val)) score++;
+    if (/[0-9]/.test(val)) score++;
+    if (/[^A-Za-z0-9]/.test(val)) score++;
+    const map = [
+      { width: '0%', color: 'transparent', text: '' },
+      { width: '25%', color: 'var(--rose)',  text: 'Muy débil' },
+      { width: '50%', color: 'var(--amber)', text: 'Regular' },
+      { width: '75%', color: '#60a5fa',      text: 'Buena' },
+      { width: '100%',color: 'var(--green)', text: '💪 Muy fuerte' },
+    ];
+    const s = map[score];
+    bar.style.width = s.width; bar.style.background = s.color;
+    lbl.textContent = s.text;
+  });
+
+  /* ── Submit with loading ── */
+  function handleSubmit(btn, url) {
+    btn.classList.add('loading');
+    btn.textContent = '';
+    setTimeout(() => { window.location.href = url; }, 1200);
+  }
+
+  document.getElementById('btn-login-submit').addEventListener('click', function() {
+    const user = document.getElementById('login-user').value.toLowerCase();
+    let url = "{% url 'oyente_dashboard' %}";
+    if (user.includes('admin')) url = "{% url 'admin_dashboard' %}";
+    else if (user.includes('artista') || user.includes('banda')) url = "{% url 'artista_dashboard' %}";
+    handleSubmit(this, url);
+  });
+
+  document.getElementById('btn-register-submit').addEventListener('click', function() {
+    const role = document.getElementById('reg-role').value;
+    const url  = role === 'artista' ? "{% url 'artista_dashboard' %}" : "{% url 'oyente_dashboard' %}";
+    handleSubmit(this, url);
+  });
+
+  /* ── Floating Particles ── */
+  const container = document.getElementById('particles-container');
+  for (let i = 0; i < 18; i++) {
+    const p = document.createElement('div');
+    const size = Math.random() * 4 + 1;
+    p.className = 'particle';
+    p.style.cssText = `
+      width:${size}px; height:${size}px;
+      left:${Math.random() * 100}%;
+      --dur:${8 + Math.random() * 12}s;
+      --delay:${Math.random() * -15}s;
+      background:${Math.random() > .5 ? 'var(--cyan)' : 'var(--purple)'};
+      opacity:.5;
+    `;
+    container.appendChild(p);
+  }
+</script>
+</body>
+</html>

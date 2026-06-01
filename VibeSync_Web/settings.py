@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'core',
 ]
 
 MIDDLEWARE = [
@@ -66,19 +67,31 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'VibeSync_Web.wsgi.application'
+STATIC_URL = 'static/'
 
+import os
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'core/static'),
+]
+
+WSGI_APPLICATION = 'VibeSync_Web.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'mssql',
+        'NAME': 'VibeSync_DB',
+        'USER': 'VibeSync_Admin',         
+        'PASSWORD': 'root7',      
+        'HOST': 'LAPTOP-0PAT5CE5',   
+        'PORT': '',                        
+        'OPTIONS': {
+            'driver': 'ODBC Driver 17 for SQL Server',  
+        },
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
@@ -110,8 +123,16 @@ USE_I18N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+AUTHENTICATION_BACKENDS = [
+    # 1. Backend nativo de Django (Controla superusuarios y la tabla auth_user)
+    'django.contrib.auth.backends.ModelBackend',
+    
+    # 2. Backend personalizado de VibeSync (Controla clientes, artistas y encargados)
+    # Reemplazar 'apps.core' por la ruta de carpetas exacta de tu aplicación
+    'core.backends.VibeSyncBusinessBackend',
+]

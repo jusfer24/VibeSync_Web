@@ -1,0 +1,125 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}VibeSync for Artists{% endblock %}
+
+{% block back_button %}
+<a href="{% url 'oyente_dashboard' %}" class="back-btn" title="Volver al Modo Oyente">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16">
+      <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
+    </svg>
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-0 pb-5">
+    
+    <div class="d-flex justify-content-between align-items-center mb-5 mt-2 flex-wrap gap-3">
+        <div>
+            <h2 class="fw-bold mb-1 text-white">Bienvenido al museo de tu arte</h2>
+            <span class="text-muted" style="font-size: 0.95rem;">Resumen del impacto de tu música y tu comunidad.</span>
+        </div>
+        
+        <div class="d-flex gap-3">
+            <a href="{% url 'subir_sencillo' %}" class="text-decoration-none">
+                <button class="btn btn-outline-light rounded-pill px-4 fw-bold" style="height: 100%;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-music-note me-1" viewBox="0 0 16 16"><path d="M9 13c0 1.105-1.12 2-2.5 2S4 14.105 4 13s1.12-2 2.5-2 2.5.895 2.5 2z"/><path fill-rule="evenodd" d="M9 3v10H8V3h1z"/><path d="M8 2.82a1 1 0 0 1 .804-.98l3-.6A1 1 0 0 1 13 2.22V4L8 5V2.82z"/></svg>
+                    Subir Sencillo
+                </button>
+            </a>
+            
+            <a href="{% url 'crear_album' %}" class="text-decoration-none">
+                <button class="btn-upload-master">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-disc-fill me-1" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-6 0a2 2 0 1 0-4 0 2 2 0 0 0 4 0zM8 7a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/></svg>
+                    Crear Álbum
+                </button>
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="stat-icon">🎧</div>
+                <div class="stat-value">{{ estadisticas.oyentes_mensuales }}</div>
+                <div class="stat-label">Oyentes Mensuales</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="stat-icon">▶️</div>
+                <div class="stat-value">{{ estadisticas.reproducciones_totales }}</div>
+                <div class="stat-label">Reproducciones Totales</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <div class="stat-value">{{ estadisticas.seguidores }}</div>
+                <div class="stat-label">Seguidores Fieles</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-5">
+        
+        <div class="col-lg-8">
+            <h4 class="fw-bold mb-4">Tus canciones más escuchadas</h4>
+            <div class="premium-card p-0 overflow-hidden">
+                <table class="track-table m-0">
+                    <thead>
+                        <tr>
+                            <th class="text-center" style="width: 50px;">#</th>
+                            <th>Título</th>
+                            <th>Álbum</th>
+                            <th class="text-end">Reproducciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cancion in top_canciones %}
+                        <tr>
+                            <td class="track-number">{{ cancion.numero }}</td>
+                            <td class="track-title-cell">
+                                <img src="https://placehold.co/40x40/{{ cancion.color }}/00e5ff?text={{ cancion.titulo|slice:':1'|upper }}" class="rounded me-3 d-inline-block align-middle" alt="Cover">
+                                <div class="d-inline-block align-middle">
+                                    <h6>{{ cancion.titulo }}</h6>
+                                </div>
+                            </td>
+                            <td class="text-muted">{{ cancion.album }}</td>
+                            <td class="text-white fw-bold text-end">{{ cancion.reproducciones }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center text-muted py-4">Aún no has subido ninguna canción.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <h4 class="fw-bold mb-4">Rendimiento de álbumes</h4>
+            <div class="d-flex flex-column gap-3">
+                {% for album in top_albumes %}
+                <div class="recent-search-item" style="background-color: var(--bg-panel); border: 1px solid rgba(255,255,255,0.05); padding: 15px;">
+                    <div class="recent-search-info">
+                        <img src="https://placehold.co/100x100/{{ album.color }}/1e2a38?text={{ album.titulo|slice:':1'|upper }}" alt="Cover" style="width: 60px; height: 60px; border-radius: 8px;">
+                        <div>
+                            <h6 class="mb-1 text-white fw-bold">{{ album.titulo }}</h6>
+                            <small class="text-muted d-block">{{ album.anio }}</small>
+                            <span class="text-info fw-bold" style="font-size: 0.85rem;">{{ album.reproducciones }} streams</span>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="text-muted text-center py-4 border rounded" style="border-color: rgba(255,255,255,0.05) !important;">
+                    No hay álbumes publicados.
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

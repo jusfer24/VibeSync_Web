@@ -1,0 +1,63 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block title %}Gestionar Eventos{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-0 pb-5">
+    <div class="d-flex justify-content-between align-items-end mb-4 mt-2 flex-wrap gap-3">
+        <div>
+            <span class="text-uppercase text-danger fw-bold" style="letter-spacing: 2px; font-size: 0.8rem;">Control de Contenido</span>
+            <h2 class="fw-bold mb-0 text-white">Gestionar Eventos</h2>
+        </div>
+    </div>
+
+    <div class="premium-card p-0 overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-dark table-hover m-0" style="background-color: transparent;" id="events-table">
+                <thead style="background-color: rgba(255,255,255,0.02);">
+                    <tr>
+                        <th class="py-3 px-4 text-muted fw-bold">EVENTO</th>
+                        <th class="py-3 px-4 text-muted fw-bold">FECHA</th>
+                        <th class="py-3 px-4 text-muted fw-bold">LUGAR</th>
+                        <th class="py-3 px-4 text-muted fw-bold text-center">ESTADO</th>
+                        <th class="py-3 px-4 text-muted fw-bold text-end">ACCIONES</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for evento in eventos %}
+                    <tr class="event-row" style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                        <td class="py-3 px-4 align-middle text-white fw-bold">{{ evento.nombre }}</td>
+                        <td class="py-3 px-4 align-middle text-muted">{{ evento.fecha }}</td>
+                        <td class="py-3 px-4 align-middle text-muted">{{ evento.lugar }}</td>
+                        <td class="py-3 px-4 align-middle text-center">
+                            <span class="badge bg-{% if evento.estado == 'Publicado' %}success{% else %}secondary{% endif %} bg-opacity-25 text-{% if evento.estado == 'Publicado' %}success{% else %}secondary{% endif %} border rounded-pill px-3">
+                                {{ evento.estado }}
+                            </span>
+                        </td>
+                        <td class="py-3 px-4 align-middle text-end">
+                            <button class="btn btn-sm btn-outline-danger btn-delete" title="Eliminar Evento">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3-fill" viewBox="0 0 16 16"><path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5Zm-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5ZM4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06Zm6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528ZM8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5Z"/></svg>
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('events-table').addEventListener('click', function(e) {
+    const btn = e.target.closest('.btn-delete');
+    if (btn) {
+        const row = btn.closest('tr');
+        if(confirm('¿Seguro que deseas eliminar este evento? Esta acción no se puede deshacer.')) {
+            row.style.transition = 'opacity 0.3s ease';
+            row.style.opacity = '0';
+            setTimeout(() => row.remove(), 300);
+        }
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,131 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block title %}Tu Perfil{% endblock %}
+{% block back_button %}
+<a href="{% url 'oyente_dashboard' %}" class="back-btn"><svg width="18" height="18" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/></svg></a>
+{% endblock %}
+{% block content %}
+<div class="page-enter" style="padding-bottom:20px">
+  <div class="row justify-content-center">
+    <div class="col-lg-7">
+
+      <div class="section-badge mb-3">Cuenta</div>
+      <h2 class="fw-bold mb-5" style="font-size:2rem;letter-spacing:-.03em">Editar Perfil</h2>
+
+      <!-- Avatar card -->
+      <div class="premium-card mb-4 text-center py-5" style="position:relative;overflow:visible">
+        <div style="position:absolute;top:0;left:0;right:0;height:80px;
+                    background:linear-gradient(135deg,rgba(0,229,255,.08),rgba(168,85,247,.06));
+                    border-radius:var(--r-lg) var(--r-lg) 0 0"></div>
+        <div style="position:relative;display:inline-block;margin-bottom:16px;margin-top:20px">
+          <img src="{{ usuario.foto_url|default:'https://placehold.co/120x120/0d1422/00e5ff?text=U' }}"
+               id="avatar-preview"
+               style="width:100px;height:100px;border-radius:50%;object-fit:cover;
+                      border:3px solid var(--cyan-border);
+                      box-shadow:0 0 25px var(--cyan-dim)" alt="Avatar">
+          <label for="avatar-upload"
+                 style="position:absolute;bottom:0;right:0;
+                        width:30px;height:30px;border-radius:50%;
+                        background:var(--cyan);color:#000;
+                        display:flex;align-items:center;justify-content:center;
+                        cursor:pointer;font-size:.9rem;
+                        box-shadow:0 2px 8px rgba(0,0,0,.4);
+                        transition:transform .2s"
+                 onmouseover="this.style.transform='scale(1.15)'" onmouseout="this.style.transform=''">
+            ✏️
+          </label>
+          <input type="file" id="avatar-upload" accept="image/*" style="display:none"
+                 onchange="previewAvatar(this)">
+        </div>
+        <h4 class="fw-bold mb-1">{{ persona.nombrePersona|default:"Mateo" }} {{ persona.apellidoPersona|default:"Sánchez" }}</h4>
+        <p style="color:var(--txt-2);margin:0;font-size:.9rem">@{{ usuario.usernameUsuario|default:"mateo_dev" }}</p>
+        <div style="display:flex;gap:16px;justify-content:center;margin-top:16px">
+          <div style="text-align:center">
+            <div style="font-weight:800;font-size:1.2rem;color:var(--cyan)">142</div>
+            <div style="font-size:.75rem;color:var(--txt-3);text-transform:uppercase;letter-spacing:.08em">Siguiendo</div>
+          </div>
+          <div style="width:1px;background:var(--b2)"></div>
+          <div style="text-align:center">
+            <div style="font-weight:800;font-size:1.2rem">2,840</div>
+            <div style="font-size:.75rem;color:var(--txt-3);text-transform:uppercase;letter-spacing:.08em">Canciones</div>
+          </div>
+          <div style="width:1px;background:var(--b2)"></div>
+          <div style="text-align:center">
+            <div style="font-weight:800;font-size:1.2rem;color:var(--purple)">Nvl. 12</div>
+            <div style="font-size:.75rem;color:var(--txt-3);text-transform:uppercase;letter-spacing:.08em">Nivel</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form card -->
+      <div class="premium-card">
+        <h5 class="fw-bold mb-4" style="border-bottom:1px solid var(--b1);padding-bottom:14px">Información personal</h5>
+        <form action="" method="POST" id="profile-form">
+          {% csrf_token %}
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <label class="premium-label">Nombre</label>
+              <input type="text" class="premium-input" value="{{ persona.nombrePersona|default:'Mateo' }}" name="nombre">
+            </div>
+            <div class="col-md-6">
+              <label class="premium-label">Apellido</label>
+              <input type="text" class="premium-input" value="{{ persona.apellidoPersona|default:'Sánchez' }}" name="apellido">
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="premium-label">Correo Electrónico</label>
+            <input type="email" class="premium-input" value="{{ persona.correoPersona|default:'mateo@vibesync.com' }}"
+                   readonly disabled style="opacity:.5;cursor:not-allowed">
+            <div style="font-size:.78rem;color:var(--txt-3);margin-top:6px">
+              El correo no puede modificarse por razones de seguridad.
+            </div>
+          </div>
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <label class="premium-label">Nombre de usuario</label>
+              <div style="position:relative">
+                <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--txt-3);font-size:.9rem">@</span>
+                <input type="text" class="premium-input" value="{{ usuario.usernameUsuario|default:'mateo_dev' }}"
+                       name="username" style="padding-left:30px!important">
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label class="premium-label">Fecha de nacimiento</label>
+              <input type="date" class="premium-input" value="{{ persona.anioNacimientoPersona|date:'Y-m-d'|default:'2000-01-01' }}" name="nacimiento">
+            </div>
+          </div>
+          <div class="mb-4">
+            <label class="premium-label">Ciudad</label>
+            <input type="text" class="premium-input" value="{{ usuario.ciudadUsuario|default:'Quito' }}" name="ciudad" placeholder="Tu ciudad actual">
+          </div>
+          <div class="d-flex justify-content-end gap-3">
+            <button type="button" class="btn btn-sm px-4 py-2 rounded-pill"
+                    style="background:rgba(255,255,255,.04);border:1px solid var(--b2);color:var(--txt-2);
+                           font-family:var(--font);transition:all .2s"
+                    onmouseover="this.style.borderColor='var(--b3)'" onmouseout="this.style.borderColor='var(--b2)'"
+                    onclick="this.form.reset()">
+              Cancelar
+            </button>
+            <button type="submit" class="btn-premium-cyan btn btn-sm px-5 py-2"
+                    onclick="event.preventDefault();vibeToast('Perfil actualizado exitosamente ✅','success')">
+              Guardar Cambios
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+function previewAvatar(input) {
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+    reader.onload = e => {
+      document.getElementById('avatar-preview').src = e.target.result;
+      vibeToast('Foto actualizada 📸', 'success', 2000);
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+</script>
+{% endblock %}

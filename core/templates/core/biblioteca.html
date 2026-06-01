@@ -1,0 +1,156 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block title %}Tu Biblioteca{% endblock %}
+{% block back_button %}
+<a href="{% url 'oyente_dashboard' %}" class="back-btn"><svg width="18" height="18" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/></svg></a>
+{% endblock %}
+{% block content %}
+<div class="page-enter" style="padding-bottom:20px">
+
+  <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-4">
+    <div>
+      <div class="section-badge">📚 Colección</div>
+      <h2 class="fw-bold mb-0" style="font-size:2rem;letter-spacing:-.03em">Tu Biblioteca</h2>
+    </div>
+    <!-- Search inside library -->
+    <div style="position:relative">
+      <svg style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--txt-3)"
+           width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+      </svg>
+      <input type="text" id="lib-search" placeholder="Buscar en tu biblioteca…"
+             style="background:rgba(255,255,255,.05);border:1px solid var(--b2);color:var(--txt-1);
+                    border-radius:50px;padding:9px 18px 9px 38px;font-family:var(--font);
+                    font-size:.88rem;outline:none;width:240px;transition:all .25s"
+             onfocus="this.style.borderColor='var(--cyan-border)';this.style.boxShadow='0 0 0 3px var(--cyan-dim)'"
+             onblur="this.style.borderColor='var(--b2)';this.style.boxShadow=''">
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <ul class="nav nav-tabs-premium" id="libraryTabs" role="tablist">
+    <li class="nav-item">
+      <button class="nav-link {% if request.GET.tab != 'albums' and request.GET.tab != 'playlists' %}active{% endif %}"
+              id="likes-tab" data-bs-toggle="tab" data-bs-target="#likes-content" type="button">
+        ❤️ Me gusta
+      </button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link {% if request.GET.tab == 'albums' %}active{% endif %}"
+              id="albums-tab" data-bs-toggle="tab" data-bs-target="#albums-content" type="button">
+        🎧 Álbumes
+      </button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link {% if request.GET.tab == 'playlists' %}active{% endif %}"
+              id="playlists-tab" data-bs-toggle="tab" data-bs-target="#playlists-content" type="button">
+        📂 Playlists
+      </button>
+    </li>
+  </ul>
+
+  <div class="tab-content" id="libraryTabsContent">
+
+    <!-- ── ME GUSTA ── -->
+    <div class="tab-pane fade {% if request.GET.tab != 'albums' and request.GET.tab != 'playlists' %}show active{% endif %}"
+         id="likes-content" role="tabpanel">
+
+      <!-- Canciones favoritas -->
+      <div class="mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <h4 class="fw-bold mb-0">Canciones que te gustan</h4>
+          <span style="font-size:.82rem;color:var(--txt-3)">
+            {{ me_gusta.canciones|length|default:"1" }} canciones
+          </span>
+        </div>
+        <div class="scroll-row">
+          {% for cancion in me_gusta.canciones %}
+          <a href="{% url 'album' %}" class="text-decoration-none">
+            <div class="music-card">
+              <div class="img-wrapper">
+                <img src="https://placehold.co/300x300/0d1422/00e5ff?text={{ cancion.titulo|slice:':1'|upper }}" alt="">
+                <div class="play-btn-overlay"><svg width="22" height="22" fill="currentColor" viewBox="0 0 16 16"><path d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/></svg></div>
+              </div>
+              <h6>{{ cancion.titulo }}</h6>
+              <small>{{ cancion.artista }}</small>
+            </div>
+          </a>
+          {% empty %}
+          <a href="{% url 'album' %}" class="text-decoration-none"><div class="music-card"><div class="img-wrapper"><img src="https://placehold.co/300x300/0d1422/00e5ff?text=C" alt=""><div class="play-btn-overlay"><svg width="22" height="22" fill="currentColor" viewBox="0 0 16 16"><path d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/></svg></div></div><h6>Crimen Perfecto</h6><small>Guardarraya</small></div></a>
+          <a href="{% url 'album' %}" class="text-decoration-none"><div class="music-card"><div class="img-wrapper"><img src="https://placehold.co/300x300/1a0d2e/a855f7?text=P" alt=""><div class="play-btn-overlay"><svg width="22" height="22" fill="currentColor" viewBox="0 0 16 16"><path d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/></svg></div></div><h6>Pichincha Nightfall</h6><small>MatS</small></div></a>
+          <a href="{% url 'album' %}" class="text-decoration-none"><div class="music-card"><div class="img-wrapper"><img src="https://placehold.co/300x300/0d2210/22d3a5?text=A" alt=""><div class="play-btn-overlay"><svg width="22" height="22" fill="currentColor" viewBox="0 0 16 16"><path d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/></svg></div></div><h6>Amanecer Neón</h6><small>DJ Santi</small></div></a>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Álbumes favoritos -->
+      <div class="mb-5">
+        <h4 class="fw-bold mb-1">Álbumes favoritos</h4>
+        <div class="scroll-row">
+          {% for album in me_gusta.albumes %}
+          <a href="{% url 'album' %}" class="text-decoration-none">
+            <div class="music-card"><div class="img-wrapper"><img src="https://placehold.co/300x300/0d1422/50e3c2?text={{ album.titulo|slice:':1'|upper }}" alt=""><div class="play-btn-overlay"><svg width="22" height="22" fill="currentColor" viewBox="0 0 16 16"><path d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/></svg></div></div><h6>{{ album.titulo }}</h6><small>{{ album.artista }}</small></div>
+          </a>
+          {% empty %}
+          <a href="{% url 'album' %}" class="text-decoration-none"><div class="music-card"><div class="img-wrapper"><img src="https://placehold.co/300x300/0d2210/22d3a5?text=N" alt=""><div class="play-btn-overlay"><svg width="22" height="22" fill="currentColor" viewBox="0 0 16 16"><path d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/></svg></div></div><h6>Noches de Quito</h6><small>Guardarraya</small></div></a>
+          <a href="{% url 'album' %}" class="text-decoration-none"><div class="music-card"><div class="img-wrapper"><img src="https://placehold.co/300x300/1c1000/fbbf24?text=A" alt=""><div class="play-btn-overlay"><svg width="22" height="22" fill="currentColor" viewBox="0 0 16 16"><path d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/></svg></div></div><h6>Amarilla</h6><small>La Máquina Camaleón</small></div></a>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Artistas seguidos -->
+      <div class="mb-4">
+        <h4 class="fw-bold mb-1">Artistas seguidos</h4>
+        <div class="scroll-row">
+          {% for artista in me_gusta.artistas %}
+          <a href="{% url 'artista' %}" class="text-decoration-none">
+            <div class="music-card artist-card"><div class="img-wrapper"><img src="https://placehold.co/300x300/0d1422/f5a623?text={{ artista.nombre|slice:':1'|upper }}" alt=""><div class="play-btn-overlay"><svg width="22" height="22" fill="currentColor" viewBox="0 0 16 16"><path d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/></svg></div></div><h6 class="text-center mt-2">{{ artista.nombre }}</h6><small class="d-block text-center">{{ artista.genero }}</small></div>
+          </a>
+          {% empty %}
+          <a href="{% url 'artista' %}" class="text-decoration-none"><div class="music-card artist-card"><div class="img-wrapper"><img src="https://placehold.co/300x300/0d2210/22d3a5?text=G" alt=""><div class="play-btn-overlay"><svg width="22" height="22" fill="currentColor" viewBox="0 0 16 16"><path d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/></svg></div></div><h6 class="text-center mt-2">Guardarraya</h6><small class="d-block text-center">Rock Andino</small></div></a>
+          <a href="{% url 'artista' %}" class="text-decoration-none"><div class="music-card artist-card"><div class="img-wrapper"><img src="https://placehold.co/300x300/1c1000/fbbf24?text=L" alt=""><div class="play-btn-overlay"><svg width="22" height="22" fill="currentColor" viewBox="0 0 16 16"><path d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/></svg></div></div><h6 class="text-center mt-2">La Máquina Camaleón</h6><small class="d-block text-center">Indie Rock</small></div></a>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- ── ÁLBUMES ── -->
+    <div class="tab-pane fade {% if request.GET.tab == 'albums' %}show active{% endif %}"
+         id="albums-content" role="tabpanel">
+      <div class="library-grid mt-2">
+        {% for album in albums_alfabetico %}
+        <a href="{% url 'album' %}" class="text-decoration-none">
+          <div class="music-card w-100"><div class="img-wrapper"><img src="https://placehold.co/300x300/0d1422/50e3c2?text={{ album.titulo|slice:':1'|upper }}" alt=""><div class="play-btn-overlay"><svg width="22" height="22" fill="currentColor" viewBox="0 0 16 16"><path d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/></svg></div></div><h6>{{ album.titulo }}</h6><small>{{ album.artista }}</small></div>
+        </a>
+        {% empty %}
+        <a href="{% url 'album' %}" class="text-decoration-none"><div class="music-card w-100"><div class="img-wrapper"><img src="https://placehold.co/300x300/0d2210/22d3a5?text=N" alt=""><div class="play-btn-overlay"><svg width="22" height="22" fill="currentColor" viewBox="0 0 16 16"><path d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/></svg></div></div><h6>Noches de Quito</h6><small>Guardarraya</small></div></a>
+        <a href="{% url 'album' %}" class="text-decoration-none"><div class="music-card w-100"><div class="img-wrapper"><img src="https://placehold.co/300x300/1a0d2e/a855f7?text=F" alt=""><div class="play-btn-overlay"><svg width="22" height="22" fill="currentColor" viewBox="0 0 16 16"><path d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/></svg></div></div><h6>Frog4Ever OST</h6><small>CamiR</small></div></a>
+        <a href="{% url 'album' %}" class="text-decoration-none"><div class="music-card w-100"><div class="img-wrapper"><img src="https://placehold.co/300x300/001a1a/22d3a5?text=E" alt=""><div class="play-btn-overlay"><svg width="22" height="22" fill="currentColor" viewBox="0 0 16 16"><path d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/></svg></div></div><h6>Ecos del Cotopaxi</h6><small>MatS</small></div></a>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- ── PLAYLISTS ── -->
+    <div class="tab-pane fade {% if request.GET.tab == 'playlists' %}show active{% endif %}"
+         id="playlists-content" role="tabpanel">
+      <div class="d-flex justify-content-between align-items-center mt-2 mb-4">
+        <span style="font-size:.88rem;color:var(--txt-3)">{{ playlists_alfabetico|length|default:"1" }} playlists</span>
+        <button class="btn-premium-cyan btn btn-sm px-4 py-2"
+                onclick="vibeToast('Función de crear playlist próximamente 🎵','info')">
+          + Nueva Playlist
+        </button>
+      </div>
+      <div class="library-grid">
+        {% for playlist in playlists_alfabetico %}
+        <a href="{% url 'playlist' %}" class="text-decoration-none">
+          <div class="music-card w-100"><div class="img-wrapper"><img src="https://placehold.co/300x300/0d0d20/a855f7?text=⚡" alt=""><div class="play-btn-overlay"><svg width="22" height="22" fill="currentColor" viewBox="0 0 16 16"><path d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/></svg></div></div><h6>{{ playlist.nombre }}</h6><small>{{ playlist.total_canciones }} canciones</small></div>
+        </a>
+        {% empty %}
+        <a href="{% url 'playlist' %}" class="text-decoration-none"><div class="music-card w-100"><div class="img-wrapper"><img src="https://placehold.co/300x300/0d0d20/a855f7?text=⚡" alt=""><div class="play-btn-overlay"><svg width="22" height="22" fill="currentColor" viewBox="0 0 16 16"><path d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/></svg></div></div><h6>Vibra Local 🇪🇨</h6><small>45 canciones</small></div></a>
+        <a href="{% url 'playlist' %}" class="text-decoration-none"><div class="music-card w-100"><div class="img-wrapper"><img src="https://placehold.co/300x300/001a1a/22d3a5?text=🌙" alt=""><div class="play-btn-overlay"><svg width="22" height="22" fill="currentColor" viewBox="0 0 16 16"><path d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/></svg></div></div><h6>Clásicos del Rock</h6><small>42 canciones</small></div></a>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

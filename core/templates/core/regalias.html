@@ -1,0 +1,173 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block title %}Mis Regalías{% endblock %}
+{% block back_button %}
+<a href="{% url 'artista_dashboard' %}" class="back-btn"><svg width="18" height="18" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/></svg></a>
+{% endblock %}
+{% block content %}
+<div class="page-enter" style="padding-bottom:20px">
+
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-5">
+    <div>
+      <div class="section-badge">💰 Finanzas</div>
+      <h2 class="fw-bold mb-1" style="font-size:2rem;letter-spacing:-.03em">Reporte de Regalías</h2>
+      <p style="color:var(--txt-2);font-size:.92rem">
+        Período: <span style="color:var(--cyan);font-weight:700">{{ resumen.mes_actual|default:"Mayo 2026" }}</span>
+      </p>
+    </div>
+    <div class="d-flex gap-2 flex-wrap">
+      <select style="background:rgba(255,255,255,.05);border:1px solid var(--b2);color:var(--txt-1);
+                     border-radius:50px;padding:9px 36px 9px 18px;font-family:var(--font);font-size:.88rem;
+                     outline:none;cursor:pointer;appearance:none;
+                     background-image:url('data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'12\' fill=\'%235a6a8a\' viewBox=\'0 0 16 16\'%3E%3Cpath d=\'M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z\'/%3E%3C/svg%3E');
+                     background-repeat:no-repeat;background-position:calc(100% - 14px) center">
+        <option>Mayo 2026</option>
+        <option>Abril 2026</option>
+        <option>Marzo 2026</option>
+      </select>
+      <button onclick="vibeToast('Descargando reporte PDF 📄','success')"
+              style="background:rgba(255,255,255,.05);border:1px solid var(--b2);color:var(--txt-1);
+                     border-radius:50px;padding:9px 20px;font-family:var(--font);font-weight:600;
+                     font-size:.88rem;cursor:pointer;transition:all .25s"
+              onmouseover="this.style.borderColor='var(--cyan-border)';this.style.color='var(--cyan)'"
+              onmouseout="this.style.borderColor='var(--b2)';this.style.color='var(--txt-1)'">
+        📥 Descargar PDF
+      </button>
+    </div>
+  </div>
+
+  <!-- Stat cards -->
+  <div class="row g-3 mb-5 stagger-children">
+    <div class="col-md-4">
+      <div class="stat-card" style="border-color:rgba(0,229,255,.2);
+                                     background:linear-gradient(180deg,rgba(0,229,255,.05),var(--bg-surface))">
+        <div class="stat-icon" style="color:var(--cyan)">💰</div>
+        <div class="stat-value glow-cyan" style="font-size:2.2rem">{{ resumen.ganancias_estimadas|default:"$3,902.00" }}</div>
+        <div class="stat-label">Ganancias Estimadas</div>
+        <div style="margin-top:8px;font-size:.78rem;color:var(--green);font-weight:600">↑ 18% vs mes anterior</div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="stat-card">
+        <div class="stat-icon">▶️</div>
+        <div class="stat-value">{{ resumen.total_reproducciones|default:"975,500" }}</div>
+        <div class="stat-label">Streams Monetizados</div>
+        <div style="margin-top:8px;font-size:.78rem;color:var(--amber);font-weight:600">⬌ Estable este mes</div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="stat-card">
+        <div class="stat-icon" style="color:var(--purple)">📊</div>
+        <div class="stat-value" style="font-size:1.8rem;padding-top:8px">{{ resumen.tasa_por_stream|default:"$0.004" }}</div>
+        <div class="stat-label">Tasa por Stream</div>
+        <div style="margin-top:8px;font-size:.78rem;color:var(--txt-3);font-weight:600">Promedio VibeSync</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Revenue chart (visual bars) -->
+  <div class="premium-card mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h5 class="fw-bold mb-0">📈 Evolución mensual</h5>
+      <span style="font-size:.78rem;color:var(--txt-3)">Últimos 6 meses</span>
+    </div>
+    <div style="display:flex;align-items:flex-end;gap:12px;height:120px;padding:0 4px">
+      {% for mes in evolucion_meses %}
+      {% empty %}
+      {% for bar in "123456" %}
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px">
+        <div style="width:100%;background:linear-gradient(to top,var(--cyan),var(--purple));border-radius:6px 6px 0 0;
+                    height:{{ forloop.counter|add:'3' }}0%;transition:height 1s var(--ease-out);
+                    animation:fade-up .4s {{ forloop.counter }}00ms both;
+                    cursor:pointer;position:relative"
+             onmouseover="this.style.opacity='.8'" onmouseout="this.style.opacity='1'">
+          <div style="position:absolute;bottom:100%;left:50%;transform:translateX(-50%);
+                      white-space:nowrap;font-size:.68rem;font-family:var(--font-mono);
+                      color:var(--cyan);padding-bottom:4px;opacity:0;transition:opacity .2s"
+               class="bar-tooltip">
+            ${{ forloop.counter|add:'5' }}00
+          </div>
+        </div>
+        <div style="font-size:.7rem;color:var(--txt-3);text-align:center">
+          {% if forloop.counter == 1 %}Dic{% elif forloop.counter == 2 %}Ene{% elif forloop.counter == 3 %}Feb{% elif forloop.counter == 4 %}Mar{% elif forloop.counter == 5 %}Abr{% else %}May{% endif %}
+        </div>
+      </div>
+      {% endfor %}
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Track breakdown table -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="fw-bold mb-0">Desglose por pista</h4>
+    <div style="font-size:.82rem;color:var(--txt-3)">Comisión discográfica descontada</div>
+  </div>
+  <div class="premium-card p-0 overflow-hidden mb-4">
+    <table class="track-table m-0">
+      <thead>
+        <tr>
+          <th style="padding:14px 20px">Pista</th>
+          <th style="padding:14px 20px;text-align:right">Reproducciones</th>
+          <th style="padding:14px 20px;text-align:right">% Total</th>
+          <th style="padding:14px 20px;text-align:right">Ganancia (USD)</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in desglose %}
+        <tr>
+          <td class="track-title-cell" style="padding:14px 20px">
+            <div class="d-flex align-items-center gap-3">
+              <img src="https://placehold.co/38x38/0d1422/00e5ff?text={{ item.cancion|slice:':1'|upper }}"
+                   style="width:38px;height:38px;border-radius:8px;flex-shrink:0" alt="">
+              <h6 class="mb-0">{{ item.cancion }}</h6>
+            </div>
+          </td>
+          <td style="color:var(--txt-2);text-align:right;font-family:var(--font-mono);font-size:.88rem;padding:14px 20px">
+            {{ item.reproducciones }}
+          </td>
+          <td style="text-align:right;padding:14px 20px">
+            <div style="display:flex;align-items:center;gap:8px;justify-content:flex-end">
+              <div style="width:60px;height:4px;background:var(--bg-raised);border-radius:4px;overflow:hidden">
+                <div style="height:100%;width:{{ forloop.counter|add:'4' }}5%;background:linear-gradient(90deg,var(--cyan),var(--purple));border-radius:4px"></div>
+              </div>
+              <span style="font-size:.78rem;color:var(--txt-3);font-family:var(--font-mono)">{{ forloop.counter|add:'4' }}5%</span>
+            </div>
+          </td>
+          <td style="color:var(--cyan);font-weight:800;text-align:right;font-family:var(--font-mono);padding:14px 20px">
+            {{ item.ganancia }}
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td class="track-title-cell" style="padding:14px 20px"><div class="d-flex align-items-center gap-3"><img src="https://placehold.co/38x38/0d1422/00e5ff?text=A" style="width:38px;height:38px;border-radius:8px" alt=""><h6 class="mb-0">Amanecer Neón</h6></div></td><td style="color:var(--txt-2);text-align:right;font-family:var(--font-mono);font-size:.88rem;padding:14px 20px">540,000</td><td style="text-align:right;padding:14px 20px"><div style="display:flex;align-items:center;gap:8px;justify-content:flex-end"><div style="width:60px;height:4px;background:var(--bg-raised);border-radius:4px;overflow:hidden"><div style="height:100%;width:55%;background:linear-gradient(90deg,var(--cyan),var(--purple));border-radius:4px"></div></div><span style="font-size:.78rem;color:var(--txt-3);font-family:var(--font-mono)">55%</span></div></td><td style="color:var(--cyan);font-weight:800;text-align:right;font-family:var(--font-mono);padding:14px 20px">$2,160.00</td></tr>
+        <tr><td class="track-title-cell" style="padding:14px 20px"><div class="d-flex align-items-center gap-3"><img src="https://placehold.co/38x38/1a0d2e/a855f7?text=V" style="width:38px;height:38px;border-radius:8px" alt=""><h6 class="mb-0">Vuelo Nocturno</h6></div></td><td style="color:var(--txt-2);text-align:right;font-family:var(--font-mono);font-size:.88rem;padding:14px 20px">320,100</td><td style="text-align:right;padding:14px 20px"><div style="display:flex;align-items:center;gap:8px;justify-content:flex-end"><div style="width:60px;height:4px;background:var(--bg-raised);border-radius:4px;overflow:hidden"><div style="height:100%;width:33%;background:linear-gradient(90deg,var(--cyan),var(--purple));border-radius:4px"></div></div><span style="font-size:.78rem;color:var(--txt-3);font-family:var(--font-mono)">33%</span></div></td><td style="color:var(--cyan);font-weight:800;text-align:right;font-family:var(--font-mono);padding:14px 20px">$1,280.40</td></tr>
+        <tr><td class="track-title-cell" style="padding:14px 20px"><div class="d-flex align-items-center gap-3"><img src="https://placehold.co/38x38/0d2210/22d3a5?text=E" style="width:38px;height:38px;border-radius:8px" alt=""><h6 class="mb-0">Ecos del Valle</h6></div></td><td style="color:var(--txt-2);text-align:right;font-family:var(--font-mono);font-size:.88rem;padding:14px 20px">115,400</td><td style="text-align:right;padding:14px 20px"><div style="display:flex;align-items:center;gap:8px;justify-content:flex-end"><div style="width:60px;height:4px;background:var(--bg-raised);border-radius:4px;overflow:hidden"><div style="height:100%;width:12%;background:linear-gradient(90deg,var(--cyan),var(--purple));border-radius:4px"></div></div><span style="font-size:.78rem;color:var(--txt-3);font-family:var(--font-mono)">12%</span></div></td><td style="color:var(--cyan);font-weight:800;text-align:right;font-family:var(--font-mono);padding:14px 20px">$461.60</td></tr>
+        {% endfor %}
+      </tbody>
+      <tfoot>
+        <tr style="border-top:2px solid var(--b2)">
+          <td style="padding:14px 20px;font-weight:800;color:var(--txt-1)">TOTAL</td>
+          <td style="padding:14px 20px;text-align:right;font-weight:800;font-family:var(--font-mono)">975,500</td>
+          <td style="padding:14px 20px;text-align:right;font-weight:700;font-family:var(--font-mono);color:var(--txt-2)">100%</td>
+          <td style="padding:14px 20px;text-align:right;font-weight:900;font-size:1.1rem;color:var(--cyan)">$3,902.00</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <!-- Payout info -->
+  <div class="premium-card" style="border-color:rgba(34,211,165,.2)">
+    <div class="d-flex align-items-center gap-3 flex-wrap">
+      <div style="font-size:1.8rem">💳</div>
+      <div style="flex:1">
+        <div style="font-weight:700;margin-bottom:2px">Próximo pago estimado</div>
+        <div style="font-size:.85rem;color:var(--txt-2)">Se acreditará alrededor del 15 de Junio 2026</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:1.8rem;font-weight:900;color:var(--green)">$3,902.00</div>
+        <div style="font-size:.78rem;color:var(--txt-3)">Comisión descontada</div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

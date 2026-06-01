@@ -1,0 +1,246 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block title %}Suscripción{% endblock %}
+{% block back_button %}
+<a href="{% url 'oyente_dashboard' %}" class="back-btn"><svg width="18" height="18" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/></svg></a>
+{% endblock %}
+{% block content %}
+<div class="page-enter" style="padding-bottom:20px">
+
+  <!-- Header -->
+  <div class="text-center mb-5">
+    <div class="section-badge" style="justify-content:center;margin-bottom:14px">💎 Planes</div>
+    <h2 class="fw-bold mb-2" style="font-size:2.2rem;letter-spacing:-.04em">Tu Plan VibeSync</h2>
+    <p style="color:var(--txt-2);max-width:440px;margin:0 auto;font-size:.95rem;line-height:1.6">
+      Elige el plan que mejor se adapte a tu ritmo. Sin compromisos.
+    </p>
+  </div>
+
+  <!-- Current plan banner -->
+  <div class="row justify-content-center mb-5">
+    <div class="col-md-8">
+      <div class="premium-card" style="border-left:4px solid var(--cyan);
+                                        background:linear-gradient(135deg,rgba(0,229,255,.05),var(--bg-surface))">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+          <div>
+            <div style="font-size:.72rem;font-weight:800;color:var(--txt-3);text-transform:uppercase;
+                        letter-spacing:.12em;margin-bottom:6px">Plan Actual</div>
+            <h3 class="fw-bold mb-1" style="font-size:1.6rem;letter-spacing:-.03em">
+              VibeSync <span class="glow-cyan">{{ usuario.tipoSuscripcion|default:"Premium" }}</span>
+            </h3>
+            <p style="color:var(--txt-2);margin:0;font-size:.9rem">
+              Pago: <span style="color:var(--txt-1);font-weight:600">{{ usuario.metodoPago|default:"Tarjeta •••• 4242" }}</span>
+            </p>
+          </div>
+          <div class="d-flex align-items-center gap-3">
+            <div style="text-align:right">
+              <div style="font-size:.78rem;color:var(--txt-3)">Próximo cobro</div>
+              <div style="font-weight:700;font-size:.95rem">30 Jun 2026</div>
+            </div>
+            <span style="display:inline-block;padding:7px 18px;border-radius:50px;font-size:.82rem;font-weight:700;
+                  background:{% if usuario.estadoSuscripcion == 'Activo' or not usuario.estadoSuscripcion %}rgba(34,211,165,.12){% else %}rgba(251,113,133,.12){% endif %};
+                  color:{% if usuario.estadoSuscripcion == 'Activo' or not usuario.estadoSuscripcion %}var(--green){% else %}var(--rose){% endif %};
+                  border:1px solid {% if usuario.estadoSuscripcion == 'Activo' or not usuario.estadoSuscripcion %}rgba(34,211,165,.3){% else %}rgba(251,113,133,.3){% endif %}">
+              ● {{ usuario.estadoSuscripcion|default:"Activo" }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Usage stats -->
+        <div class="row g-3 mt-3 pt-3" style="border-top:1px solid var(--b1)">
+          <div class="col-4 text-center">
+            <div style="font-weight:800;font-size:1.3rem;color:var(--cyan)">2,840</div>
+            <div style="font-size:.72rem;color:var(--txt-3);text-transform:uppercase;letter-spacing:.08em">Canciones</div>
+          </div>
+          <div class="col-4 text-center">
+            <div style="font-weight:800;font-size:1.3rem">142h</div>
+            <div style="font-size:.72rem;color:var(--txt-3);text-transform:uppercase;letter-spacing:.08em">Escuchadas</div>
+          </div>
+          <div class="col-4 text-center">
+            <div style="font-weight:800;font-size:1.3rem;color:var(--purple)">3</div>
+            <div style="font-size:.72rem;color:var(--txt-3);text-transform:uppercase;letter-spacing:.08em">Insignias</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Billing toggle -->
+  <div class="text-center mb-5">
+    <div style="display:inline-flex;background:rgba(0,0,0,.3);border:1px solid var(--b1);
+                border-radius:50px;padding:5px;gap:4px">
+      <button id="btn-monthly" class="billing-toggle active" onclick="setBilling('monthly')">Mensual</button>
+      <button id="btn-annual"  class="billing-toggle"          onclick="setBilling('annual')">
+        Anual <span style="font-size:.68rem;background:var(--green);color:#000;
+                           padding:2px 7px;border-radius:10px;margin-left:4px;font-weight:700">-20%</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Pricing cards -->
+  <div class="row g-4 justify-content-center mb-5">
+
+    <!-- Freemium -->
+    <div class="col-md-4 col-sm-10">
+      <div class="price-card h-100 {% if usuario.tipoSuscripcion == 'Freemium' %}active{% endif %}">
+        {% if usuario.tipoSuscripcion == 'Freemium' %}<div class="price-badge">Tu Plan</div>{% endif %}
+        <div style="font-size:2rem;margin-bottom:12px">🎵</div>
+        <h4 class="fw-bold mb-1">Freemium</h4>
+        <div style="margin:16px 0">
+          <span style="font-size:2.8rem;font-weight:900;letter-spacing:-.05em" class="price-amount" data-monthly="0" data-annual="0">$0.00</span>
+          <span style="font-size:.85rem;color:var(--txt-3)">/mes</span>
+        </div>
+        <hr style="border-color:var(--b1);margin:18px 0">
+        <ul style="list-style:none;padding:0;text-align:left;font-size:.88rem;color:var(--txt-2);
+                   display:flex;flex-direction:column;gap:10px;margin-bottom:24px">
+          <li>✅ Catálogo completo con anuncios</li>
+          <li>✅ Motor Mood-Sync básico</li>
+          <li>✅ Sistema de insignias</li>
+          <li>❌ Audio en alta fidelidad</li>
+          <li>❌ Descarga offline</li>
+          <li>❌ Sin anuncios</li>
+        </ul>
+        <button class="btn w-100 py-3 rounded-pill"
+                style="background:rgba(255,255,255,.05);border:1px solid var(--b2);
+                       color:var(--txt-2);font-family:var(--font);font-weight:700;
+                       transition:all .25s;{% if usuario.tipoSuscripcion == 'Freemium' %}opacity:.5;cursor:not-allowed{% endif %}"
+                {% if usuario.tipoSuscripcion == 'Freemium' %}disabled{% endif %}
+                onmouseover="if(!this.disabled) this.style.borderColor='var(--cyan-border)'"
+                onmouseout="if(!this.disabled) this.style.borderColor='var(--b2)'">
+          {% if usuario.tipoSuscripcion == 'Freemium' %}Plan actual{% else %}Seleccionar{% endif %}
+        </button>
+      </div>
+    </div>
+
+    <!-- Premium (highlighted) -->
+    <div class="col-md-4 col-sm-10">
+      <div class="price-card h-100 active" style="transform:scale(1.03);border-color:var(--cyan-border);
+                                                   box-shadow:0 0 50px var(--cyan-dim)">
+        <div class="price-badge" style="background:linear-gradient(135deg,var(--cyan),var(--purple))">
+          {% if usuario.tipoSuscripcion == 'Premium' or not usuario.tipoSuscripcion %}Tu Plan{% else %}⭐ Popular{% endif %}
+        </div>
+        <div style="font-size:2rem;margin-bottom:12px">✨</div>
+        <h4 class="fw-bold mb-1" style="color:var(--cyan)">Premium</h4>
+        <div style="margin:16px 0">
+          <span style="font-size:2.8rem;font-weight:900;letter-spacing:-.05em;color:var(--cyan)"
+                class="price-amount" data-monthly="5.99" data-annual="4.79">$5.99</span>
+          <span style="font-size:.85rem;color:var(--txt-3)">/mes</span>
+        </div>
+        <hr style="border-color:var(--cyan-border);margin:18px 0">
+        <ul style="list-style:none;padding:0;text-align:left;font-size:.88rem;color:var(--txt-2);
+                   display:flex;flex-direction:column;gap:10px;margin-bottom:24px">
+          <li style="color:var(--txt-1)">✅ Todo lo de Freemium</li>
+          <li style="color:var(--txt-1)">✅ Audio en alta fidelidad</li>
+          <li style="color:var(--txt-1)">✅ Sin anuncios</li>
+          <li style="color:var(--txt-1)">✅ Mood-Sync ilimitado</li>
+          <li style="color:var(--txt-1)">✅ Descarga offline</li>
+          <li style="color:var(--txt-1)">✅ -10% en boletos de eventos</li>
+        </ul>
+        <button class="btn-premium-cyan btn w-100 py-3"
+                {% if usuario.tipoSuscripcion == 'Premium' or not usuario.tipoSuscripcion %}style="opacity:.6;cursor:not-allowed" disabled{% else %}onclick="vibeToast('¡Bienvenido a Premium! ✨','success')"{% endif %}>
+          {% if usuario.tipoSuscripcion == 'Premium' or not usuario.tipoSuscripcion %}Plan actual{% else %}Mejorar a Premium{% endif %}
+        </button>
+      </div>
+    </div>
+
+    <!-- Estudiantil -->
+    <div class="col-md-4 col-sm-10">
+      <div class="price-card h-100 {% if usuario.tipoSuscripcion == 'Estudiantil' %}active{% endif %}">
+        {% if usuario.tipoSuscripcion == 'Estudiantil' %}<div class="price-badge">Tu Plan</div>{% endif %}
+        <div style="font-size:2rem;margin-bottom:12px">🎓</div>
+        <h4 class="fw-bold mb-1">Estudiantil</h4>
+        <div style="margin:16px 0">
+          <span style="font-size:2.8rem;font-weight:900;letter-spacing:-.05em"
+                class="price-amount" data-monthly="2.99" data-annual="2.39">$2.99</span>
+          <span style="font-size:.85rem;color:var(--txt-3)">/mes</span>
+        </div>
+        <hr style="border-color:var(--b1);margin:18px 0">
+        <ul style="list-style:none;padding:0;text-align:left;font-size:.88rem;color:var(--txt-2);
+                   display:flex;flex-direction:column;gap:10px;margin-bottom:24px">
+          <li>✅ Todo lo de Premium</li>
+          <li>✅ Descuento para estudiantes</li>
+          <li>✅ Verificación semestral</li>
+          <li>✅ Acceso con correo universitario</li>
+          <li>⚠️ Requiere verificación</li>
+          <li>⚠️ Un dispositivo</li>
+        </ul>
+        <button class="btn w-100 py-3 rounded-pill"
+                style="background:rgba(255,255,255,.05);border:1px solid var(--b2);
+                       color:var(--txt-1);font-family:var(--font);font-weight:700;
+                       transition:all .25s;{% if usuario.tipoSuscripcion == 'Estudiantil' %}opacity:.5;cursor:not-allowed{% endif %}"
+                {% if usuario.tipoSuscripcion == 'Estudiantil' %}disabled{% endif %}
+                onclick="vibeToast('Redirigiendo a verificación estudiantil 🎓','info')"
+                onmouseover="if(!this.disabled)this.style.borderColor='var(--cyan-border)'"
+                onmouseout="if(!this.disabled)this.style.borderColor='var(--b2)'">
+          {% if usuario.tipoSuscripcion == 'Estudiantil' %}Plan actual{% else %}Verificar estudiante{% endif %}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <h4 class="fw-bold mb-4 text-center">Preguntas frecuentes</h4>
+      <div id="faq-list" class="d-flex flex-column gap-2">
+        {% for item in faq_items %}
+        {% empty %}
+        <div class="faq-item premium-card" style="cursor:pointer;padding:18px 22px" onclick="toggleFaq(this)">
+          <div class="d-flex justify-content-between align-items-center">
+            <span style="font-weight:600;font-size:.92rem">¿Puedo cancelar en cualquier momento?</span>
+            <svg class="faq-arrow" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="transition:transform .3s;flex-shrink:0;color:var(--txt-3)"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>
+          </div>
+          <div class="faq-answer" style="display:none;margin-top:12px;font-size:.88rem;color:var(--txt-2);line-height:1.6">
+            Sí, puedes cancelar tu suscripción en cualquier momento. Tendrás acceso hasta el final del período de facturación actual.
+          </div>
+        </div>
+        <div class="faq-item premium-card" style="cursor:pointer;padding:18px 22px" onclick="toggleFaq(this)">
+          <div class="d-flex justify-content-between align-items-center">
+            <span style="font-weight:600;font-size:.92rem">¿Cómo funciona el plan Estudiantil?</span>
+            <svg class="faq-arrow" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="transition:transform .3s;flex-shrink:0;color:var(--txt-3)"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>
+          </div>
+          <div class="faq-answer" style="display:none;margin-top:12px;font-size:.88rem;color:var(--txt-2);line-height:1.6">
+            Debes verificar tu correo universitario cada semestre. Una vez verificado, disfrutas de todos los beneficios Premium a la mitad del precio.
+          </div>
+        </div>
+        <div class="faq-item premium-card" style="cursor:pointer;padding:18px 22px" onclick="toggleFaq(this)">
+          <div class="d-flex justify-content-between align-items-center">
+            <span style="font-weight:600;font-size:.92rem">¿Cuáles son los métodos de pago aceptados?</span>
+            <svg class="faq-arrow" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="transition:transform .3s;flex-shrink:0;color:var(--txt-3)"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>
+          </div>
+          <div class="faq-answer" style="display:none;margin-top:12px;font-size:.88rem;color:var(--txt-2);line-height:1.6">
+            Aceptamos tarjetas de crédito/débito (Visa, Mastercard), wallets digitales y tarjetas de regalo VibeSync.
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.billing-toggle {
+  padding:9px 20px;border:none;background:transparent;
+  color:var(--txt-3);font-family:var(--font);font-weight:700;font-size:.88rem;
+  border-radius:50px;cursor:pointer;transition:all .3s;
+}
+.billing-toggle.active { background:var(--cyan);color:#000;box-shadow:0 4px 12px var(--cyan-glow); }
+</style>
+<script>
+function setBilling(type) {
+  document.getElementById('btn-monthly').classList.toggle('active', type==='monthly');
+  document.getElementById('btn-annual').classList.toggle('active',  type==='annual');
+  document.querySelectorAll('.price-amount').forEach(el => {
+    const val = parseFloat(el.dataset[type]);
+    el.textContent = val === 0 ? '$0.00' : '$' + val.toFixed(2);
+  });
+}
+function toggleFaq(el) {
+  const answer = el.querySelector('.faq-answer');
+  const arrow  = el.querySelector('.faq-arrow');
+  const open   = answer.style.display !== 'none';
+  answer.style.display = open ? 'none' : 'block';
+  arrow.style.transform = open ? '' : 'rotate(180deg)';
+}
+</script>
+{% endblock %}
