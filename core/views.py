@@ -1,5 +1,8 @@
 # Create your views here.
-from django.shortcuts import render
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.hashers import make_password 
+from .models import Persona, Usuario
+from .forms import PersonaForm, UsuarioForm
 
 # ==========================================
 # HELPER: Memoria Frontend (Cookies)
@@ -161,14 +164,94 @@ def regalias_view(request):
 # ==========================================
 # VISTAS DE ADMINISTRADOR
 # ==========================================
+# 1. READ (Leer)
+def administrar_usuarios_view(request):
+    context = get_user_role(request)
+    # select_related optimiza la consulta cruzando Persona y Usuario en un solo llamado a SQL
+    usuarios_db = Usuario.objects.select_related('persona').all()
+    context['usuarios'] = usuarios_db
+    return render(request, 'core/administrar_usuarios.html', context)
+
+# 2. CREATE (Crear)
+def crear_usuario_view(request):
+    context = get_user_role(request)
+    if request.method == 'POST':
+        form_persona = PersonaForm(request.POST)
+        form_usuario = UsuarioForm(request.POST)
+        
+        if form_persona.is_valid() and form_usuario.is_valid():
+            # Guardamos la Persona primero, sin enviar a DB (commit=False)
+            nueva_persona = form_persona.save(commit=False)
+            # Encriptamos la contraseña por seguridad antes de guardar en SQL Server
+            nueva_persona.contrasenaPersona = make_password(nueva_persona.contrasenaPersona)
+            nueva_persona.save() # Ahora sí guardamos en SQL Server
+            
+            # Guardamos el Usuario
+            nuevo_usuario = form_usuario.save(commit=False)
+            nuevo_usuario.persona = nueva_persona # Enlazamos el OneToOneField
+            nuevo_usuario.save()
+            
+            return redirect('administrar_usuarios')
+    else:
+        form_persona = PersonaForm()
+        form_usuario = UsuarioForm()
+
+    context.update({'form_persona': form_persona, 'form_usuario': form_usuario, 'accion': 'Crear'})
+    return render(request, 'core/usuario_form.html', context)
+
+# 3. UPDATE (Actualizar)
+def editar_usuario_view(request, id):
+    context = get_user_role(request)
+    # Buscamos al usuario por su Primary Key (que es idPersona)
+    usuario = get_object_or_404(Usuario, pk=id)
+    persona = usuario.persona
+    
+    if request.method == 'POST':
+        form_persona = PersonaForm(request.POST, instance=persona)
+        form_usuario = UsuarioForm(request.POST, instance=usuario)
+        
+        if form_persona.is_valid() and form_usuario.is_valid():
+            persona_actualizada = form_persona.save(commit=False)
+            # Solo re-encriptar si el administrador escribió una nueva contraseña
+            if 'contrasenaPersona' in form_persona.changed_data:
+                persona_actualizada.contrasenaPersona = make_password(persona_actualizada.contrasenaPersona)
+            persona_actualizada.save()
+            form_usuario.save()
+            return redirect('administrar_usuarios')
+    else:
+        form_persona = PersonaForm(instance=persona)
+        form_usuario = UsuarioForm(instance=usuario)
+
+    context.update({'form_persona': form_persona, 'form_usuario': form_usuario, 'accion': 'Editar'})
+    return render(request, 'core/usuario_form.html', context)
+
+# 4. DELETE (Eliminar)
+def eliminar_usuario_view(request, id):
+    context = get_user_role(request)
+    usuario = get_object_or_404(Usuario, pk=id)
+    persona = usuario.persona
+    
+    if request.method == 'POST':
+        # Primero eliminamos el hijo (Usuario) y luego el padre (Persona) para no violar llaves foráneas
+        usuario.delete()
+        persona.delete()
+        return redirect('administrar_usuarios')
+        
+    context.update({'usuario': usuario})
+    return render(request, 'core/usuario_confirm_delete.html', context)
+
 def admin_dashboard_view(request):
     context = get_user_role(request)
+    total_usuarios_reales = Usuario.objects.count()
     context.update({
         'es_admin': True, 'es_artista': False,
         'metricas_globales': {
-            'usuarios_totales': '1,245,890',
-            'usuarios_activos_hoy': '342,100',
-            'nuevos_registros_mes': '+12,400'
+            # Usamos el dato real
+            'usuarios_totales': f"{total_usuarios_reales:,}", 
+            
+            # Estos se mantienen simulados por ahora:
+            'usuarios_activos_hoy': '342,100', 
+            'nuevos_registros_mes': '+12,400'  
         },
         'generos_top': [
             {'nombre': 'Indie Rock', 'porcentaje': 85},
@@ -203,14 +286,14 @@ def admin_dashboard_view(request):
 
 def administrar_usuarios_view(request):
     context = get_user_role(request)
-    context.update({
-        'usuarios': [
-            {'id': 1, 'username': 'mateo_dev', 'email': 'mateo@vibesync.com', 'rol': 'Administrador', 'estado': 'Activo', 'color': 'success'},
-            {'id': 2, 'username': 'guardarraya_oficial', 'email': 'banda@guardarraya.ec', 'rol': 'Artista', 'estado': 'Activo', 'color': 'success'},
-            {'id': 3, 'username': 'juan_oyente99', 'email': 'juan99@gmail.com', 'rol': 'Oyente', 'estado': 'Bloqueado', 'color': 'danger'},
-            {'id': 4, 'username': 'indie_fan', 'email': 'indie@hotmail.com', 'rol': 'Oyente', 'estado': 'Activo', 'color': 'success'},
-        ]
-    })
+    
+    # Esta es la línea clave: Le pedimos a SQL Server TODOS los usuarios
+    # y usamos select_related para traer también los datos de la Persona asociada
+    usuarios_db = Usuario.objects.select_related('persona').all()
+    
+    # Inyectamos los usuarios reales al contexto
+    context['usuarios'] = usuarios_db
+    
     return render(request, 'core/administrar_usuarios.html', context)
 
 def admin_eventos_view(request):

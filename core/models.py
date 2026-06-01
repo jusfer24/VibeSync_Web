@@ -15,7 +15,7 @@ class Persona(models.Model):
 
     class Meta:
         managed = False
-        db_table = '"Identidad"."Persona"'
+        db_table = '[Identidad].[Persona]'
 
     def __str__(self):
         return f"{self.nombrePersona} ({self.tipoPersona})"
@@ -43,7 +43,7 @@ class Usuario(models.Model):
 
     class Meta:
         managed = False
-        db_table = '"Identidad"."Usuario"'
+        db_table = '[Identidad].[Usuario]'
 
     def __str__(self):
         return self.usernameUsuario

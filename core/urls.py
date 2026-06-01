@@ -41,8 +41,11 @@ urlpatterns = [
     # ==========================
     # RUTAS DE ADMINISTRADOR
     # ==========================
-    path('admin-panel/', views.admin_dashboard_view, name='admin_dashboard'), # <-- Ya no está duplicado
+    path('admin-panel/', views.admin_dashboard_view, name='admin_dashboard'),
     path('admin-usuarios/', views.administrar_usuarios_view, name='administrar_usuarios'),
+    path('admin-usuarios/crear/', views.crear_usuario_view, name='crear_usuario'),
+    path('admin-usuarios/editar/<int:id>/', views.editar_usuario_view, name='editar_usuario'),
+    path('admin-usuarios/eliminar/<int:id>/', views.eliminar_usuario_view, name='eliminar_usuario'),
     path('admin-eventos/', views.admin_eventos_view, name='admin_eventos'),
     path('admin-insignias/', views.admin_insignias_view, name='admin_insignias'),
 ]

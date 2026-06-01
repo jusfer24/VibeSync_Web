@@ -5,7 +5,7 @@
 <a href="{% url 'admin_dashboard' %}" class="back-btn"><svg width="18" height="18" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/></svg></a>
 {% endblock %}
 {% block content %}
-<div class="page-enter" style="padding-bottom:20px">
+<div class="page-enter" style="padding-bottom:20px"> 
   <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-5">
     <div>
       <div class="section-badge">Gestión de Cuentas</div>
@@ -31,6 +31,13 @@
                onfocus="this.style.borderColor='var(--cyan-border)';this.style.boxShadow='0 0 0 3px var(--cyan-dim)'"
                onblur="this.style.borderColor='var(--b2)';this.style.boxShadow=''">
       </div>
+      <div style="position:relative;width:260px"></div>
+        <a href="{% url 'crear_usuario' %}" 
+          style="background:var(--cyan);color:#0d1422;border-radius:50px;padding:10px 20px;font-weight:700;text-decoration:none;font-size:.88rem;transition:all .2s"
+          onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
+          + Nuevo Usuario
+        </a>
+      </div>
     </div>
   </div>
 
@@ -54,56 +61,62 @@
               onmouseout="this.style.background=''">
             <td style="padding:14px 20px;vertical-align:middle">
               <div style="display:flex;align-items:center;gap:12px">
-                <img src="https://placehold.co/36x36/0d1422/00e5ff?text={{ usuario.username|slice:':1'|upper }}"
+                <img src="https://placehold.co/36x36/0d1422/00e5ff?text={{ usuario.usernameUsuario|slice:':1'|upper }}"
                      style="width:36px;height:36px;border-radius:50%;border:2px solid var(--b2)" alt="">
                 <div>
-                  <div style="font-weight:700;font-size:.9rem" class="search-target">{{ usuario.username }}</div>
-                  <div style="font-size:.75rem;color:var(--txt-3)">ID #{{ usuario.id }}</div>
+                  <div style="font-weight:700;font-size:.9rem" class="search-target">{{ usuario.usernameUsuario }}</div>
+                  <div style="font-size:.75rem;color:var(--txt-3)">ID #{{ usuario.pk }}</div>
                 </div>
               </div>
             </td>
-            <td style="padding:14px 20px;vertical-align:middle;color:var(--txt-2);font-size:.9rem" class="search-target">{{ usuario.email }}</td>
+            <td style="padding:14px 20px;vertical-align:middle;color:var(--txt-2);font-size:.9rem" class="search-target">
+                {{ usuario.persona.correoPersona }}
+            </td>
             <td style="padding:14px 20px;vertical-align:middle">
               <span style="font-size:.8rem;font-weight:700;
-                color:{% if usuario.rol == 'Administrador' %}var(--cyan){% elif usuario.rol == 'Artista' %}var(--purple){% else %}var(--txt-2){% endif %}">
-                {% if usuario.rol == 'Administrador' %}🛡️{% elif usuario.rol == 'Artista' %}🎸{% else %}🎧{% endif %}
-                {{ usuario.rol }}
+                color:{% if usuario.persona.tipoPersona == 'Administrador' %}var(--cyan){% elif usuario.persona.tipoPersona == 'Artista' %}var(--purple){% else %}var(--txt-2){% endif %}">
+                {% if usuario.persona.tipoPersona == 'Administrador' %}🛡️{% elif usuario.persona.tipoPersona == 'Artista' %}🎸{% else %}🎧{% endif %}
+                {{ usuario.persona.tipoPersona }}
               </span>
             </td>
             <td style="padding:14px 20px;vertical-align:middle;text-align:center">
               <span class="status-badge"
                     style="display:inline-block;font-size:.75rem;font-weight:700;padding:5px 14px;border-radius:50px;
-                    background:{% if usuario.estado == 'Activo' %}rgba(34,211,165,.12){% else %}rgba(251,113,133,.12){% endif %};
-                    color:{% if usuario.estado == 'Activo' %}var(--green){% else %}var(--rose){% endif %};
-                    border:1px solid {% if usuario.estado == 'Activo' %}rgba(34,211,165,.3){% else %}rgba(251,113,133,.3){% endif %}">
-                {{ usuario.estado }}
+                    background:{% if usuario.estadoSuscripcion == 'Activo' or not usuario.estadoSuscripcion %}rgba(34,211,165,.12){% else %}rgba(251,113,133,.12){% endif %};
+                    color:{% if usuario.estadoSuscripcion == 'Activo' or not usuario.estadoSuscripcion %}var(--green){% else %}var(--rose){% endif %};
+                    border:1px solid {% if usuario.estadoSuscripcion == 'Activo' or not usuario.estadoSuscripcion %}rgba(34,211,165,.3){% else %}rgba(251,113,133,.3){% endif %}">
+                {{ usuario.estadoSuscripcion|default:"Activo" }}
               </span>
             </td>
             <td style="padding:14px 20px;vertical-align:middle;text-align:right">
               <div style="display:flex;gap:8px;justify-content:flex-end">
-                <button class="btn-toggle-status"
-                        title="{% if usuario.estado == 'Activo' %}Bloquear{% else %}Desbloquear{% endif %}"
+                
+                <a href="{% url 'editar_usuario' usuario.pk %}"
+                        title="Editar Usuario"
                         style="width:34px;height:34px;border-radius:8px;border:1px solid var(--b2);
                                background:rgba(255,255,255,.04);color:var(--txt-2);cursor:pointer;
-                               display:flex;align-items:center;justify-content:center;transition:all .2s"
-                        onmouseover="this.style.borderColor='var(--amber)';this.style.color='var(--amber)'"
+                               display:flex;align-items:center;justify-content:center;transition:all .2s;text-decoration:none;"
+                        onmouseover="this.style.borderColor='var(--cyan)';this.style.color='var(--cyan)'"
                         onmouseout="this.style.borderColor='var(--b2)';this.style.color='var(--txt-2)'">
-                  {% if usuario.estado == 'Activo' %}
-                  <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/></svg>
-                  {% else %}
-                  <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M11 1a2 2 0 0 0-2 2v4a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h5V3a3 3 0 0 1 6 0v4a.5.5 0 0 1-1 0V3a2 2 0 0 0-2-2z"/></svg>
-                  {% endif %}
-                </button>
-                <button class="btn-delete-user"
+                  ✏️
+                </a>
+                
+                <a href="{% url 'eliminar_usuario' usuario.pk %}"
                         title="Eliminar usuario"
                         style="width:34px;height:34px;border-radius:8px;border:1px solid var(--b2);
                                background:rgba(255,255,255,.04);color:var(--txt-2);cursor:pointer;
-                               display:flex;align-items:center;justify-content:center;transition:all .2s"
+                               display:flex;align-items:center;justify-content:center;transition:all .2s;text-decoration:none;"
                         onmouseover="this.style.borderColor='var(--rose)';this.style.color='var(--rose)';this.style.background='rgba(251,113,133,.08)'"
                         onmouseout="this.style.borderColor='var(--b2)';this.style.color='var(--txt-2)';this.style.background='rgba(255,255,255,.04)'">
                   <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5Zm-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5Z"/></svg>
-                </button>
+                </a>
               </div>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="5" class="text-center py-5" style="color:var(--txt-3)">
+              No hay usuarios registrados en la base de datos.
             </td>
           </tr>
           {% endfor %}
