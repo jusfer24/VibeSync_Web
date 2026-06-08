@@ -1,125 +1,136 @@
 {% extends 'core/base.html' %}
 {% load static %}
-
 {% block title %}VibeSync for Artists{% endblock %}
-
 {% block back_button %}
-<a href="{% url 'oyente_dashboard' %}" class="back-btn" title="Volver al Modo Oyente">
-    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16">
-      <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
-    </svg>
-</a>
+<a href="{% url 'oyente_dashboard' %}" class="back-btn"><svg width="18" height="18" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/></svg></a>
 {% endblock %}
-
 {% block content %}
-<div class="container-fluid p-0 pb-5">
-    
-    <div class="d-flex justify-content-between align-items-center mb-5 mt-2 flex-wrap gap-3">
+<div class="page-enter" style="padding-bottom:20px">
+
+  <!-- ── PARALLAX ARTIST HERO ── -->
+  <section style="position:relative;overflow:hidden;border-radius:24px;margin-bottom:36px" id="artist-hero">
+    <div id="art-plx" style="position:absolute;inset:-30px;
+      background:
+        radial-gradient(ellipse 90% 100% at 5% 60%,rgba(168,85,247,.2) 0%,transparent 55%),
+        radial-gradient(ellipse 70% 80% at 90% 20%,rgba(0,229,255,.12) 0%,transparent 55%),
+        radial-gradient(ellipse 60% 50% at 50% 100%,rgba(251,113,133,.08) 0%,transparent 60%),
+        var(--bg-surface);
+      will-change:transform;transition:transform .1s linear;border-radius:24px"></div>
+    <div style="position:absolute;inset:0;background:linear-gradient(160deg,rgba(168,85,247,.04),rgba(0,229,255,.03),rgba(8,12,22,.88) 80%);z-index:1;border-radius:24px"></div>
+    <!-- Floating musical symbols -->
+    <span class="music-note" style="left:3%;top:15%;--sz:2.2rem;--dur:6s;--delay:0s">🎸</span>
+    <span class="music-note" style="left:7%;top:65%;--sz:1.3rem;--dur:8s;--delay:-2s">🎵</span>
+    <span class="music-note" style="right:5%;top:20%;--sz:1.8rem;--dur:5s;--delay:-1s">💿</span>
+    <span class="music-note" style="right:10%;top:70%;--sz:1rem;--dur:9s;--delay:-4s">🎤</span>
+    <span class="music-note" style="left:45%;top:5%;--sz:1.4rem;--dur:7s;--delay:-3s">🎼</span>
+    <div id="art-content" style="position:relative;z-index:2;padding:48px 40px">
+      <div class="d-flex justify-content-between align-items-start flex-wrap gap-4">
         <div>
-            <h2 class="fw-bold mb-1 text-white">Bienvenido al museo de tu arte</h2>
-            <span class="text-muted" style="font-size: 0.95rem;">Resumen del impacto de tu música y tu comunidad.</span>
-        </div>
-        
-        <div class="d-flex gap-3">
+          <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(168,85,247,.12);border:1px solid rgba(168,85,247,.3);border-radius:50px;padding:7px 16px;font-size:.8rem;font-weight:700;color:var(--purple);margin-bottom:16px;animation:fade-up .5s both">
+            <div style="width:8px;height:8px;border-radius:50%;background:var(--purple);animation:pulse-glow 2s infinite"></div>
+            VibeSync for Artists — Panel activo
+          </div>
+          <h2 class="fw-bold mb-2" style="font-size:clamp(1.6rem,3vw,2.4rem);letter-spacing:-.03em;line-height:1.2">
+            Bienvenido al<br>
+            <span style="background:linear-gradient(135deg,var(--purple),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">museo de tu arte</span>
+          </h2>
+          <p style="color:var(--txt-2);font-size:.95rem;margin-bottom:24px;max-width:440px;line-height:1.7">
+            Gestiona tu música, analiza tu impacto y monetiza tu talento desde aquí.
+          </p>
+          <div class="d-flex gap-3 flex-wrap">
             <a href="{% url 'subir_sencillo' %}" class="text-decoration-none">
-                <button class="btn btn-outline-light rounded-pill px-4 fw-bold" style="height: 100%;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-music-note me-1" viewBox="0 0 16 16"><path d="M9 13c0 1.105-1.12 2-2.5 2S4 14.105 4 13s1.12-2 2.5-2 2.5.895 2.5 2z"/><path fill-rule="evenodd" d="M9 3v10H8V3h1z"/><path d="M8 2.82a1 1 0 0 1 .804-.98l3-.6A1 1 0 0 1 13 2.22V4L8 5V2.82z"/></svg>
-                    Subir Sencillo
-                </button>
+              <button style="background:rgba(255,255,255,.06);border:1.5px solid var(--b2);color:var(--txt-1);border-radius:50px;padding:11px 24px;font-family:var(--font);font-weight:700;font-size:.9rem;cursor:pointer;transition:all .25s;display:flex;align-items:center;gap:8px" onmouseover="this.style.borderColor='var(--cyan-border)';this.style.background='var(--cyan-dim)';this.style.color='var(--cyan)'" onmouseout="this.style.borderColor='var(--b2)';this.style.background='rgba(255,255,255,.06)';this.style.color='var(--txt-1)'">🎵 Subir Sencillo</button>
             </a>
-            
             <a href="{% url 'crear_album' %}" class="text-decoration-none">
-                <button class="btn-upload-master">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-disc-fill me-1" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-6 0a2 2 0 1 0-4 0 2 2 0 0 0 4 0zM8 7a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/></svg>
-                    Crear Álbum
-                </button>
+              <button class="btn-upload-master">💿 Crear Álbum</button>
             </a>
+          </div>
         </div>
+        <!-- Stats pills -->
+        <div style="display:flex;flex-direction:column;gap:10px;min-width:160px;animation:fade-up .5s .3s both">
+          <div style="background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.3);border-radius:16px;padding:16px 22px;text-align:center;box-shadow:0 0 20px var(--purple-dim)">
+            <div style="font-size:2rem;font-weight:900;color:var(--purple);letter-spacing:-.04em">{{ estadisticas.oyentes_mensuales|default:"45,230" }}</div>
+            <div style="font-size:.7rem;color:var(--txt-3);text-transform:uppercase;letter-spacing:.1em;font-weight:700">Oyentes/mes</div>
+          </div>
+          <div style="background:rgba(0,229,255,.08);border:1px solid var(--cyan-border);border-radius:16px;padding:16px 22px;text-align:center">
+            <div style="font-size:2rem;font-weight:900;color:var(--cyan);letter-spacing:-.04em">{{ estadisticas.reproducciones_totales|default:"1.2M" }}</div>
+            <div style="font-size:.7rem;color:var(--txt-3);text-transform:uppercase;letter-spacing:.1em;font-weight:700">Streams</div>
+          </div>
+          <div style="background:rgba(34,211,165,.08);border:1px solid rgba(34,211,165,.3);border-radius:16px;padding:16px 22px;text-align:center">
+            <div style="font-size:2rem;font-weight:900;color:var(--green);letter-spacing:-.04em">{{ estadisticas.seguidores|default:"12,400" }}</div>
+            <div style="font-size:.7rem;color:var(--txt-3);text-transform:uppercase;letter-spacing:.1em;font-weight:700">Seguidores</div>
+          </div>
+        </div>
+      </div>
     </div>
+  </section>
 
-    <div class="row g-4 mb-5">
-        <div class="col-md-4">
-            <div class="stat-card">
-                <div class="stat-icon">🎧</div>
-                <div class="stat-value">{{ estadisticas.oyentes_mensuales }}</div>
-                <div class="stat-label">Oyentes Mensuales</div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="stat-card">
-                <div class="stat-icon">▶️</div>
-                <div class="stat-value">{{ estadisticas.reproducciones_totales }}</div>
-                <div class="stat-label">Reproducciones Totales</div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="stat-card">
-                <div class="stat-icon">👥</div>
-                <div class="stat-value">{{ estadisticas.seguidores }}</div>
-                <div class="stat-label">Seguidores Fieles</div>
-            </div>
-        </div>
+  <div class="color-divider"></div>
+
+  <!-- Content grid -->
+  <div class="row g-4">
+    <div class="col-lg-8">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div><div class="section-badge" style="color:var(--purple)"><span style="background:var(--purple);width:18px;height:2px;border-radius:1px;display:inline-block"></span> 🎵 Top Tracks</div><h4 class="fw-bold mb-0">Canciones más escuchadas</h4></div>
+        <a href="{% url 'regalias' %}" style="font-size:.85rem;color:var(--green);text-decoration:none;font-weight:600">Ver regalías →</a>
+      </div>
+      <div class="premium-card p-0 overflow-hidden" style="border-color:rgba(168,85,247,.15)">
+        <table class="track-table m-0">
+          <thead><tr><th style="width:50px">#</th><th>Título</th><th>Álbum</th><th style="text-align:right">Reproducciones</th></tr></thead>
+          <tbody>
+            {% for cancion in top_canciones %}
+            <tr>
+              <td class="track-number">{{ cancion.numero }}</td>
+              <td class="track-title-cell"><div class="d-flex align-items-center gap-3"><img src="https://placehold.co/40x40/{{ cancion.color|default:'1a0d2e' }}/a855f7?text={{ cancion.titulo|slice:':1'|upper }}" style="width:40px;height:40px;border-radius:8px" alt=""><h6 class="mb-0">{{ cancion.titulo }}</h6></div></td>
+              <td style="color:var(--txt-2);font-size:.88rem">{{ cancion.album }}</td>
+              <td style="text-align:right;font-weight:800;font-family:var(--font-mono);color:var(--purple)">{{ cancion.reproducciones }}</td>
+            </tr>
+            {% empty %}
+            <tr><td class="track-number">1</td><td class="track-title-cell"><div class="d-flex align-items-center gap-3"><img src="https://placehold.co/40x40/1a0d2e/a855f7?text=A" style="width:40px;height:40px;border-radius:8px" alt=""><h6 class="mb-0">Amanecer Neón</h6></div></td><td style="color:var(--txt-2);font-size:.88rem">Sintético</td><td style="text-align:right;font-weight:800;font-family:var(--font-mono);color:var(--purple)">540,000</td></tr>
+            <tr><td class="track-number">2</td><td class="track-title-cell"><div class="d-flex align-items-center gap-3"><img src="https://placehold.co/40x40/001a1a/22d3a5?text=V" style="width:40px;height:40px;border-radius:8px" alt=""><h6 class="mb-0">Vuelo Nocturno</h6></div></td><td style="color:var(--txt-2);font-size:.88rem">Sintético</td><td style="text-align:right;font-weight:800;font-family:var(--font-mono);color:var(--purple)">320,100</td></tr>
+            <tr><td class="track-number">3</td><td class="track-title-cell"><div class="d-flex align-items-center gap-3"><img src="https://placehold.co/40x40/0d1422/00e5ff?text=E" style="width:40px;height:40px;border-radius:8px" alt=""><h6 class="mb-0">Ecos del Valle</h6></div></td><td style="color:var(--txt-2);font-size:.88rem">Sintético</td><td style="text-align:right;font-weight:800;font-family:var(--font-mono);color:var(--purple)">115,400</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
     </div>
-
-    <div class="row g-5">
-        
-        <div class="col-lg-8">
-            <h4 class="fw-bold mb-4">Tus canciones más escuchadas</h4>
-            <div class="premium-card p-0 overflow-hidden">
-                <table class="track-table m-0">
-                    <thead>
-                        <tr>
-                            <th class="text-center" style="width: 50px;">#</th>
-                            <th>Título</th>
-                            <th>Álbum</th>
-                            <th class="text-end">Reproducciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for cancion in top_canciones %}
-                        <tr>
-                            <td class="track-number">{{ cancion.numero }}</td>
-                            <td class="track-title-cell">
-                                <img src="https://placehold.co/40x40/{{ cancion.color }}/00e5ff?text={{ cancion.titulo|slice:':1'|upper }}" class="rounded me-3 d-inline-block align-middle" alt="Cover">
-                                <div class="d-inline-block align-middle">
-                                    <h6>{{ cancion.titulo }}</h6>
-                                </div>
-                            </td>
-                            <td class="text-muted">{{ cancion.album }}</td>
-                            <td class="text-white fw-bold text-end">{{ cancion.reproducciones }}</td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="4" class="text-center text-muted py-4">Aún no has subido ninguna canción.</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+    <div class="col-lg-4">
+      <div class="section-badge" style="color:var(--amber)"><span style="background:var(--amber);width:18px;height:2px;border-radius:1px;display:inline-block"></span> 💿 Álbumes</div>
+      <h4 class="fw-bold mb-3">Rendimiento</h4>
+      <div class="d-flex flex-column gap-3 mb-4">
+        {% for album in top_albumes %}
+        <div style="background:var(--bg-surface);border:1px solid var(--b1);border-radius:14px;padding:16px;display:flex;align-items:center;gap:14px;transition:all .25s;cursor:pointer" onmouseover="this.style.borderColor='rgba(251,191,36,.4)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--b1)';this.style.transform=''">
+          <img src="https://placehold.co/56x56/{{ album.color|default:'1c1000' }}/fbbf24?text={{ album.titulo|slice:':1'|upper }}" style="width:56px;height:56px;border-radius:10px;flex-shrink:0" alt="">
+          <div style="flex:1;min-width:0"><div style="font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ album.titulo }}</div><div style="font-size:.78rem;color:var(--txt-3);margin-top:2px">{{ album.anio }}</div><div style="font-size:.82rem;color:var(--amber);font-weight:700;margin-top:4px">{{ album.reproducciones }} streams</div></div>
         </div>
-
-        <div class="col-lg-4">
-            <h4 class="fw-bold mb-4">Rendimiento de álbumes</h4>
-            <div class="d-flex flex-column gap-3">
-                {% for album in top_albumes %}
-                <div class="recent-search-item" style="background-color: var(--bg-panel); border: 1px solid rgba(255,255,255,0.05); padding: 15px;">
-                    <div class="recent-search-info">
-                        <img src="https://placehold.co/100x100/{{ album.color }}/1e2a38?text={{ album.titulo|slice:':1'|upper }}" alt="Cover" style="width: 60px; height: 60px; border-radius: 8px;">
-                        <div>
-                            <h6 class="mb-1 text-white fw-bold">{{ album.titulo }}</h6>
-                            <small class="text-muted d-block">{{ album.anio }}</small>
-                            <span class="text-info fw-bold" style="font-size: 0.85rem;">{{ album.reproducciones }} streams</span>
-                        </div>
-                    </div>
-                </div>
-                {% empty %}
-                <div class="text-muted text-center py-4 border rounded" style="border-color: rgba(255,255,255,0.05) !important;">
-                    No hay álbumes publicados.
-                </div>
-                {% endfor %}
-            </div>
+        {% empty %}
+        <div style="background:var(--bg-surface);border:1px solid var(--b1);border-radius:14px;padding:16px;display:flex;align-items:center;gap:14px;transition:all .25s;cursor:pointer" onmouseover="this.style.borderColor='rgba(251,191,36,.4)'" onmouseout="this.style.borderColor='var(--b1)'"><img src="https://placehold.co/56x56/1c1000/fbbf24?text=S" style="width:56px;height:56px;border-radius:10px;flex-shrink:0" alt=""><div style="flex:1"><div style="font-weight:700">Sintético</div><div style="font-size:.78rem;color:var(--txt-3);margin-top:2px">2023</div><div style="font-size:.82rem;color:var(--amber);font-weight:700;margin-top:4px">860,100 streams</div></div></div>
+        {% endfor %}
+      </div>
+      <!-- Royalties teaser -->
+      <a href="{% url 'regalias' %}" class="text-decoration-none">
+        <div style="background:linear-gradient(135deg,rgba(0,229,255,.08),rgba(168,85,247,.06));border:1px solid var(--cyan-border);border-radius:16px;padding:20px;transition:all .3s;cursor:pointer" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 12px 30px var(--cyan-dim)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><span style="font-size:1.6rem">💰</span><div><div style="font-weight:800;color:var(--cyan)">Regalías Mayo 2026</div><div style="font-size:.78rem;color:var(--txt-3)">Período cerrado</div></div></div>
+          <div style="font-size:2rem;font-weight:900;letter-spacing:-.04em">$3,902.00</div>
+          <div style="font-size:.78rem;color:var(--green);margin-top:4px">↑ 18% vs mes anterior</div>
+          <div style="font-size:.82rem;color:var(--cyan);font-weight:600;margin-top:12px">Ver reporte completo →</div>
         </div>
-
+      </a>
     </div>
+  </div>
 </div>
+
+<script>
+const artPlx=document.getElementById('art-plx'),artContent=document.getElementById('art-content');
+if(artPlx){
+  document.addEventListener('mousemove',e=>{
+    const x=(e.clientX/window.innerWidth-.5)*20,y=(e.clientY/window.innerHeight-.5)*13;
+    artPlx.style.transform=`translate(${x}px,${y}px) scale(1.06)`;
+    if(artContent)artContent.style.transform=`translate(${-x*.09}px,${-y*.06}px)`;
+  });
+  document.querySelector('.main-content')?.addEventListener('scroll',function(){
+    artPlx.style.transform=`translateY(${this.scrollTop*.22}px) scale(1.06)`;
+  });
+}
+</script>
 {% endblock %}

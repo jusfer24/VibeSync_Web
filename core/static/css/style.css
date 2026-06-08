@@ -1569,3 +1569,338 @@ select.form-select {
 
 /* Grid layout helper */
 .auto-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--min-col, 200px), 1fr)); gap: var(--gap, 20px); }
+
+/* ================================================================
+   VIBESYNC v2.1 — COLOR BOOST, PARALLAX, DROPDOWN FIX, EXTRAS
+   ================================================================ */
+
+/* ── Fix all native <select> / <option> dropdowns ── */
+select, select option {
+  background-color: var(--bg-surface) !important;
+  color: var(--txt-1) !important;
+}
+select:focus { outline: none; }
+select option:hover,
+select option:checked { background-color: var(--bg-raised) !important; }
+.dark-input option,
+.premium-input option,
+.form-select option {
+  background: var(--bg-surface) !important;
+  color: var(--txt-1) !important;
+}
+
+/* ── Colorful gradient section badges ── */
+.badge-cyan   { background: var(--cyan-dim);   color: var(--cyan);   border: 1px solid var(--cyan-border);  }
+.badge-purple { background: var(--purple-dim);  color: var(--purple); border: 1px solid rgba(168,85,247,.3);  }
+.badge-green  { background: rgba(34,211,165,.12); color: var(--green); border: 1px solid rgba(34,211,165,.3);  }
+.badge-amber  { background: rgba(251,191,36,.12); color: var(--amber); border: 1px solid rgba(251,191,36,.3);  }
+.badge-rose   { background: rgba(251,113,133,.12);color: var(--rose);  border: 1px solid rgba(251,113,133,.3); }
+
+/* ── Multi-color gradient cards ── */
+.card-glow-cyan   { border-color: var(--cyan-border)   !important; box-shadow: 0 0 30px var(--cyan-dim);   }
+.card-glow-purple { border-color: rgba(168,85,247,.35) !important; box-shadow: 0 0 30px var(--purple-dim); }
+.card-glow-green  { border-color: rgba(34,211,165,.35) !important; box-shadow: 0 0 30px rgba(34,211,165,.1); }
+.card-glow-amber  { border-color: rgba(251,191,36,.35) !important; box-shadow: 0 0 30px rgba(251,191,36,.1); }
+
+/* ── Animated neon border (shimmer) ── */
+.neon-border {
+  position: relative;
+}
+.neon-border::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--cyan), var(--purple), var(--cyan));
+  background-size: 200%;
+  animation: gradient-drift 4s linear infinite;
+  z-index: -1;
+  opacity: 0.6;
+}
+
+/* ── Vibrant stat cards (colored variants) ── */
+.stat-card.cyan-card   { background: linear-gradient(135deg, rgba(0,229,255,.08), var(--bg-surface));   border-color: var(--cyan-border);           }
+.stat-card.purple-card { background: linear-gradient(135deg, rgba(168,85,247,.08), var(--bg-surface));  border-color: rgba(168,85,247,.3);           }
+.stat-card.green-card  { background: linear-gradient(135deg, rgba(34,211,165,.08), var(--bg-surface));  border-color: rgba(34,211,165,.3);           }
+.stat-card.amber-card  { background: linear-gradient(135deg, rgba(251,191,36,.08), var(--bg-surface));  border-color: rgba(251,191,36,.3);           }
+.stat-card.rose-card   { background: linear-gradient(135deg, rgba(251,113,133,.08), var(--bg-surface)); border-color: rgba(251,113,133,.3);          }
+
+/* ── Colorful section divider ── */
+.color-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--cyan), var(--purple), transparent);
+  margin: 32px 0;
+  opacity: 0.35;
+}
+
+/* ── Animated background orbs ── */
+.ambient-orb {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(100px);
+  pointer-events: none;
+  z-index: 0;
+  animation: float var(--dur, 12s) ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
+}
+.orb-topleft  { top: -150px; left: -100px;  width: 450px; height: 450px; background: rgba(0,229,255,.04);   --dur: 14s; }
+.orb-botright { bottom: -150px; right: -100px; width: 400px; height: 400px; background: rgba(168,85,247,.04); --dur: 11s; --delay: -4s; }
+.orb-center   { top: 40%; left: 35%;  width: 300px; height: 300px; background: rgba(251,191,36,.025);        --dur: 18s; --delay: -8s; }
+
+/* ── Parallax container ── */
+.parallax-section {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--r-xl);
+  margin-bottom: 36px;
+}
+.parallax-bg {
+  position: absolute;
+  inset: -30px;
+  background-size: cover;
+  background-position: center;
+  will-change: transform;
+  transition: transform 0.1s linear;
+  border-radius: inherit;
+}
+.parallax-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(160deg,
+    rgba(0,229,255,.06) 0%,
+    rgba(168,85,247,.04) 40%,
+    rgba(8,12,22,.9) 100%);
+  z-index: 1;
+}
+.parallax-content {
+  position: relative;
+  z-index: 2;
+  padding: 48px 40px;
+}
+
+/* ── Floating music notes (decoration) ── */
+.music-note {
+  position: absolute;
+  font-size: var(--sz, 1.2rem);
+  opacity: 0;
+  animation: note-float var(--dur, 6s) ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
+  pointer-events: none;
+  z-index: 1;
+  user-select: none;
+}
+@keyframes note-float {
+  0%   { opacity: 0; transform: translateY(0) rotate(0deg) scale(0.5); }
+  20%  { opacity: 0.7; }
+  80%  { opacity: 0.3; }
+  100% { opacity: 0; transform: translateY(-80px) rotate(15deg) scale(1); }
+}
+
+/* ── Colorful mood section ── */
+.mood-section {
+  background: linear-gradient(135deg,
+    rgba(0,229,255,.06) 0%,
+    rgba(168,85,247,.04) 50%,
+    rgba(251,191,36,.03) 100%);
+}
+
+/* ── Add song modal ── */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 9000;
+  background: rgba(0,0,0,.75);
+  backdrop-filter: blur(8px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+  animation: fade-in .25s;
+}
+.modal-box {
+  background: var(--bg-surface);
+  border: 1px solid var(--b2);
+  border-radius: var(--r-xl);
+  width: 100%;
+  max-width: 560px;
+  max-height: 85vh;
+  display: flex; flex-direction: column;
+  box-shadow: 0 30px 80px rgba(0,0,0,.7);
+  animation: scale-in .3s var(--ease-bounce);
+  overflow: hidden;
+}
+.modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 22px 26px;
+  border-bottom: 1px solid var(--b1);
+}
+.modal-close {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: rgba(255,255,255,.06); border: 1px solid var(--b2);
+  color: var(--txt-2); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .2s; font-size: 1rem;
+}
+.modal-close:hover { background: var(--cyan-dim); color: var(--cyan); }
+.modal-body { flex: 1; overflow-y: auto; padding: 20px 26px; }
+.modal-footer {
+  padding: 16px 26px;
+  border-top: 1px solid var(--b1);
+  display: flex; justify-content: flex-end; gap: 10px;
+}
+
+/* Song result item in modal */
+.song-result {
+  display: flex; align-items: center; gap: 14px;
+  padding: 10px 12px;
+  border-radius: var(--r-md);
+  cursor: pointer;
+  transition: background .18s;
+  border: 1.5px solid transparent;
+}
+.song-result:hover { background: rgba(255,255,255,.04); }
+.song-result.selected {
+  background: var(--cyan-dim);
+  border-color: var(--cyan-border);
+}
+.song-result img { width: 42px; height: 42px; border-radius: var(--r-sm); flex-shrink: 0; }
+.song-result .check {
+  margin-left: auto; width: 22px; height: 22px;
+  border-radius: 50%; border: 2px solid var(--b2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: .7rem; transition: all .2s; flex-shrink: 0;
+}
+.song-result.selected .check { background: var(--cyan); border-color: var(--cyan); color: #000; }
+
+/* ── Colorful empty state ── */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  border: 2px dashed var(--b2);
+  border-radius: var(--r-xl);
+  transition: border-color .3s;
+}
+.empty-state:hover { border-color: var(--cyan-border); }
+.empty-state-icon {
+  font-size: 3.5rem;
+  margin-bottom: 16px;
+  animation: float 4s ease-in-out infinite;
+  display: block;
+}
+
+/* ── Colorful progress bar variants ── */
+.bar-cyan   { background: linear-gradient(90deg, var(--cyan), #0097a7); }
+.bar-purple { background: linear-gradient(90deg, var(--purple), #7c3aed); }
+.bar-rainbow{ background: linear-gradient(90deg, var(--cyan), var(--purple), var(--rose)); }
+.bar-sunset { background: linear-gradient(90deg, var(--amber), var(--rose)); }
+
+/* ── Error page ── */
+.error-page {
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  background: var(--bg-void);
+  position: relative; overflow: hidden;
+  padding: 40px 20px;
+  text-align: center;
+}
+.error-code {
+  font-size: clamp(6rem, 20vw, 14rem);
+  font-weight: 900;
+  letter-spacing: -0.06em;
+  line-height: 1;
+  background: linear-gradient(135deg, var(--cyan) 0%, var(--purple) 50%, var(--rose) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradient-drift 4s ease infinite;
+  background-size: 200%;
+}
+.error-vinyl {
+  width: 160px; height: 160px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 50%,
+    transparent 15%, #111 16%, #111 26%,
+    #1a1a1a 27%, #1a1a1a 40%, #111 41%, #111 55%,
+    #1a1a1a 56%, #1a1a1a 100%);
+  border: 4px solid #222;
+  box-shadow: 0 0 40px rgba(0,229,255,.2), 0 0 80px rgba(168,85,247,.1);
+  position: relative;
+  animation: rotate-disc 8s linear infinite paused;
+}
+.error-vinyl.spinning { animation-play-state: running; }
+.error-vinyl::after {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: var(--cyan);
+  box-shadow: 0 0 15px var(--cyan-glow);
+}
+
+/* ── Color-coded timeline (for future use) ── */
+.timeline-item {
+  position: relative;
+  padding-left: 28px;
+  padding-bottom: 24px;
+}
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: 8px; top: 0; bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--cyan), var(--purple));
+  opacity: 0.4;
+}
+.timeline-dot {
+  position: absolute;
+  left: 0; top: 4px;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: var(--cyan);
+  border: 3px solid var(--bg-base);
+  box-shadow: 0 0 10px var(--cyan-glow);
+}
+
+/* ── Vivid scrollrow indicators ── */
+.scroll-row-wrap { position: relative; }
+.scroll-row-wrap::after {
+  content: '';
+  position: absolute;
+  top: 0; right: 0;
+  width: 80px; height: 100%;
+  background: linear-gradient(to left, var(--bg-base), transparent);
+  pointer-events: none;
+}
+
+/* ── Colorful tag chips ── */
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 12px;
+  border-radius: var(--r-full);
+  font-size: .75rem;
+  font-weight: 700;
+  border: 1px solid;
+  transition: all .2s;
+  cursor: default;
+}
+.chip-cyan   { background: var(--cyan-dim);    color: var(--cyan);   border-color: var(--cyan-border);  }
+.chip-purple { background: var(--purple-dim);   color: var(--purple); border-color: rgba(168,85,247,.3); }
+.chip-green  { background: rgba(34,211,165,.1); color: var(--green);  border-color: rgba(34,211,165,.3); }
+.chip-amber  { background: rgba(251,191,36,.1); color: var(--amber);  border-color: rgba(251,191,36,.3); }
+
+/* ── Glass notification pill ── */
+.glass-pill {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(0,229,255,.07);
+  border: 1px solid var(--cyan-border);
+  border-radius: var(--r-full);
+  padding: 8px 18px;
+  font-size: .82rem;
+  font-weight: 600;
+  color: var(--cyan);
+  backdrop-filter: blur(8px);
+  animation: fade-up .5s var(--ease-bounce) both;
+}
+.glass-pill .dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--cyan);
+  animation: pulse-glow 2s infinite;
+}

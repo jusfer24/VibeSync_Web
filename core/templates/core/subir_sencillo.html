@@ -1,74 +1,304 @@
 {% extends 'core/base.html' %}
 {% load static %}
-
 {% block title %}Subir Sencillo{% endblock %}
-
 {% block back_button %}
-<a href="{% url 'artista_dashboard' %}" class="back-btn" title="Cancelar y volver">
-    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
-      <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854z"/>
-    </svg>
+<a href="{% url 'artista_dashboard' %}" class="back-btn" title="Cancelar">
+  <svg width="18" height="18" fill="currentColor" viewBox="0 0 16 16"><path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854z"/></svg>
 </a>
 {% endblock %}
-
 {% block content %}
-<div class="container-fluid p-0 pb-5 max-width-md mx-auto">
-    
-    <div class="mb-4">
-        <h2 class="fw-bold mb-1">Publicar Sencillo</h2>
-        <p class="text-muted">Sube tu nueva pista independiente para que tus oyentes la descubran.</p>
+<div class="page-enter" style="max-width:800px;margin:0 auto;padding-bottom:20px">
+
+  <!-- Animated header -->
+  <div class="mb-5" style="position:relative">
+    <div style="position:absolute;top:-20px;right:-20px;width:160px;height:160px;border-radius:50%;
+                background:radial-gradient(circle,rgba(168,85,247,.12),transparent 70%);pointer-events:none"></div>
+    <div class="section-badge mb-2" style="color:var(--purple)">
+      <span style="background:var(--purple);width:18px;height:2px;border-radius:1px;display:inline-block;box-shadow:0 0 6px var(--purple-glow)"></span>
+      🎵 Publicar
+    </div>
+    <h2 class="fw-bold mb-1" style="font-size:2rem;letter-spacing:-.03em">Publicar Sencillo</h2>
+    <p style="color:var(--txt-2);font-size:.95rem">Sube tu nueva pista y llega a oyentes de todo el mundo.</p>
+  </div>
+
+  <!-- Upload steps progress -->
+  <div style="display:flex;align-items:center;gap:0;margin-bottom:36px">
+    <div style="width:30px;height:30px;border-radius:50%;background:var(--purple);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.8rem;flex-shrink:0;box-shadow:0 0 12px var(--purple-glow)">1</div>
+    <div style="flex:1;height:2px;background:linear-gradient(90deg,var(--purple),var(--cyan))"></div>
+    <div style="width:30px;height:30px;border-radius:50%;background:var(--cyan);color:#000;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.8rem;flex-shrink:0;box-shadow:0 0 12px var(--cyan-glow)">2</div>
+    <div style="flex:1;height:2px;background:var(--bg-raised)"></div>
+    <div style="width:30px;height:30px;border-radius:50%;background:var(--bg-raised);border:2px solid var(--b2);color:var(--txt-3);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.8rem;flex-shrink:0">3</div>
+    <div style="margin-left:14px;font-size:.82rem;color:var(--txt-3)">Portada + Metadata → Audio → Publicar</div>
+  </div>
+
+  <form action="#" method="POST" enctype="multipart/form-data" id="single-form">
+    {% csrf_token %}
+
+    <!-- Card 1: Cover + Metadata -->
+    <div class="premium-card mb-4" style="border-color:rgba(168,85,247,.15);position:relative;overflow:hidden">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--purple),var(--cyan))"></div>
+      <h5 class="fw-bold mb-4" style="padding-top:4px">1. Información del sencillo</h5>
+      <div class="row g-4">
+        <!-- Cover -->
+        <div class="col-md-4">
+          <label class="premium-label">Portada *</label>
+          <div class="upload-cover-zone" id="single-cover-zone" onclick="document.getElementById('single_cover').click()"
+               style="height:220px;border-color:rgba(168,85,247,.3)">
+            <div id="cover-ph" style="display:flex;flex-direction:column;align-items:center;gap:8px">
+              <svg width="44" height="44" fill="var(--txt-3)" viewBox="0 0 16 16"><path d="M10.5 8.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/><path d="M2 4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2H2zm13 6.5l-3.3-3.3a.5.5 0 0 0-.7 0L8 10.2l-1.5-1.5a.5.5 0 0 0-.7 0L2 12.5V6a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v4.5z"/></svg>
+              <span style="font-size:.82rem;color:var(--txt-3);text-align:center">Haz clic para subir<br><span style="color:var(--txt-3);font-size:.76rem">JPG/PNG · mín 800×800</span></span>
+            </div>
+            <input type="file" id="single_cover" name="single_cover" class="d-none" accept="image/*" required onchange="previewSingleCover(this)">
+          </div>
+        </div>
+        <!-- Metadata -->
+        <div class="col-md-8">
+          <div class="mb-3">
+            <label class="premium-label">Título de la canción *</label>
+            <input type="text" class="premium-input form-control form-control-lg" name="titulo_cancion"
+                   placeholder="Ej. Amanecer Neón" required
+                   oninput="updatePreview(this.value)">
+          </div>
+          <div class="row g-3 mb-3">
+            <div class="col-6">
+              <label class="premium-label">Año *</label>
+              <input type="number" class="premium-input form-control" name="anio" value="2026" min="1950" max="2030" required>
+            </div>
+            <div class="col-6">
+              <label class="premium-label">Género *</label>
+              <select class="premium-input form-select" name="genero_cancion" style="background-color:rgba(255,255,255,.04);color:var(--txt-1)">
+                <option style="background:var(--bg-surface);color:var(--txt-1)" value="synthwave">Synthwave Andino</option>
+                <option style="background:var(--bg-surface);color:var(--txt-1)" value="indie">Indie Rock</option>
+                <option style="background:var(--bg-surface);color:var(--txt-1)" value="pop">Pop Latino</option>
+                <option style="background:var(--bg-surface);color:var(--txt-1)" value="urbano">Urbano</option>
+                <option style="background:var(--bg-surface);color:var(--txt-1)" value="house">House / EDM</option>
+                <option style="background:var(--bg-surface);color:var(--txt-1)" value="folk">Folk Andino</option>
+                <option style="background:var(--bg-surface);color:var(--txt-1)" value="jazz">Jazz Fusion</option>
+              </select>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="premium-label">ISRC (opcional)</label>
+            <input type="text" class="premium-input form-control" name="isrc" placeholder="Ej. EC-QPM-26-00001">
+            <div style="font-size:.75rem;color:var(--txt-3);margin-top:5px">Código internacional de grabación estándar</div>
+          </div>
+          <div class="mb-3">
+            <label class="premium-label">Letra (opcional)</label>
+            <textarea class="premium-input form-control" name="letra" rows="4"
+                      placeholder="Pega aquí la letra de la canción..."></textarea>
+          </div>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="premium-label">Discográfica *</label>
+              <select class="premium-input form-select" name="discografica" style="background-color:rgba(255,255,255,.04);color:var(--txt-1)">
+                <option style="background:var(--bg-surface);color:var(--txt-1)">Quito Play Music S.A.</option>
+                <option style="background:var(--bg-surface);color:var(--txt-1)">Guayas Records S.A.</option>
+                <option style="background:var(--bg-surface);color:var(--txt-1)">Andean Sounds Cia.</option>
+                <option style="background:var(--bg-surface);color:var(--txt-1)">Independiente</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="premium-label">Tipo de lanzamiento</label>
+              <select class="premium-input form-select" name="tipo" style="background-color:rgba(255,255,255,.04);color:var(--txt-1)">
+                <option style="background:var(--bg-surface);color:var(--txt-1)">Sencillo</option>
+                <option style="background:var(--bg-surface);color:var(--txt-1)">B-Side</option>
+                <option style="background:var(--bg-surface);color:var(--txt-1)">Instrumental</option>
+                <option style="background:var(--bg-surface);color:var(--txt-1)">Remix</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <form action="#" method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
+    <!-- Card 2: Audio file -->
+    <div class="premium-card mb-4" style="border-color:rgba(0,229,255,.15);position:relative;overflow:hidden">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--cyan),var(--green))"></div>
+      <h5 class="fw-bold mb-4" style="padding-top:4px">2. Archivo de audio</h5>
+      <div style="background:rgba(0,229,255,.04);border:2px dashed rgba(0,229,255,.2);border-radius:16px;
+                  padding:32px;text-align:center;cursor:pointer;transition:all .3s;position:relative"
+           id="audio-drop-zone"
+           onclick="document.getElementById('audio_file').click()"
+           ondragover="event.preventDefault();this.style.borderColor='var(--cyan)';this.style.background='rgba(0,229,255,.08)'"
+           ondragleave="this.style.borderColor='rgba(0,229,255,.2)';this.style.background='rgba(0,229,255,.04)'"
+           ondrop="event.preventDefault();handleAudioDrop(event)">
+        <div id="audio-placeholder">
+          <div style="font-size:3rem;margin-bottom:12px;animation:float 3s ease-in-out infinite">🎵</div>
+          <h6 class="fw-bold mb-2">Arrastra tu archivo aquí</h6>
+          <p style="color:var(--txt-3);font-size:.85rem;margin-bottom:16px">o haz clic para seleccionar</p>
+          <span style="background:var(--cyan-dim);border:1px solid var(--cyan-border);color:var(--cyan);border-radius:50px;padding:6px 18px;font-size:.82rem;font-weight:700">
+            MP3 · WAV · FLAC · AIFF
+          </span>
+        </div>
+        <div id="audio-selected" style="display:none">
+          <div style="font-size:2.5rem;margin-bottom:10px">✅</div>
+          <h6 class="fw-bold mb-1" id="audio-filename" style="color:var(--green)">archivo.mp3</h6>
+          <p style="color:var(--txt-3);font-size:.82rem;margin:0" id="audio-filesize">—</p>
+        </div>
+        <input type="file" id="audio_file" name="audio_file" class="d-none" accept="audio/*" required onchange="handleAudioSelect(this)">
+      </div>
 
-        <div class="premium-card mb-4">
-            <div class="row g-4">
-                <div class="col-md-4">
-                    <label class="form-label text-muted small fw-bold">PORTADA DEL SENCILLO</label>
-                    <div class="upload-cover-zone" onclick="document.getElementById('single_cover').click()">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="var(--text-muted)" class="bi bi-image mb-2" viewBox="0 0 16 16"><path d="M10.5 8.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/><path d="M2 4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2H2zm13 6.5l-3.3-3.3a.5.5 0 0 0-.7 0L8 10.2l-1.5-1.5a.5.5 0 0 0-.7 0L2 12.5V6a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v4.5z"/></svg>
-                        <span class="text-muted small text-center px-2">Haz clic para subir JPG/PNG</span>
-                        <input type="file" id="single_cover" name="single_cover" class="d-none" accept="image/*" required>
-                    </div>
-                </div>
+      <!-- Audio quality info -->
+      <div class="row g-3 mt-3">
+        <div class="col-4">
+          <div style="background:var(--bg-raised);border-radius:10px;padding:14px;text-align:center">
+            <div style="font-size:1.2rem;margin-bottom:4px">🎚️</div>
+            <div style="font-size:.75rem;font-weight:700;color:var(--txt-1)">Alta Fidelidad</div>
+            <div style="font-size:.7rem;color:var(--txt-3)">WAV/FLAC recomendado</div>
+          </div>
+        </div>
+        <div class="col-4">
+          <div style="background:var(--bg-raised);border-radius:10px;padding:14px;text-align:center">
+            <div style="font-size:1.2rem;margin-bottom:4px">📏</div>
+            <div style="font-size:.75rem;font-weight:700;color:var(--txt-1)">Máx. 500 MB</div>
+            <div style="font-size:.7rem;color:var(--txt-3)">Por archivo de audio</div>
+          </div>
+        </div>
+        <div class="col-4">
+          <div style="background:var(--bg-raised);border-radius:10px;padding:14px;text-align:center">
+            <div style="font-size:1.2rem;margin-bottom:4px">⚡</div>
+            <div style="font-size:.75rem;font-weight:700;color:var(--txt-1)">Procesado en &lt;2min</div>
+            <div style="font-size:.7rem;color:var(--txt-3)">Disponible enseguida</div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-                <div class="col-md-8">
-                    <div class="mb-3">
-                        <label class="form-label text-muted small fw-bold">TÍTULO DE LA CANCIÓN</label>
-                        <input type="text" class="form-control dark-input form-control-lg" name="titulo_cancion" placeholder="Ej. Amanecer Neón" required>
-                    </div>
-                    
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label class="form-label text-muted small fw-bold">AÑO</label>
-                            <input type="number" class="form-control dark-input" name="anio_lanzamiento" value="2026" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label text-muted small fw-bold">GÉNERO</label>
-                            <select class="form-select dark-input" name="genero_cancion">
-                                <option value="indie">Indie Rock</option>
-                                <option value="pop">Pop Latino</option>
-                                <option value="urbano">Urbano</option>
-                                <option value="andino">Alternativo Andino</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="p-3 mt-4 rounded" style="background-color: rgba(0, 229, 255, 0.05); border: 1px solid rgba(0, 229, 255, 0.2);">
-                        <label class="form-label text-info small fw-bold mb-2">ARCHIVO DE AUDIO MAESTRO (.mp3/.wav)</label>
-                        <input type="file" class="form-control dark-input" name="archivo_audio" accept="audio/*" required>
-                    </div>
-                </div>
+    <!-- Card 3: Preview + Submit -->
+    <div class="premium-card mb-4" style="border-color:rgba(34,211,165,.15);position:relative;overflow:hidden">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--green),var(--purple))"></div>
+      <h5 class="fw-bold mb-4" style="padding-top:4px">3. Vista previa y configuración</h5>
+      <div class="row g-4 align-items-center">
+        <div class="col-md-6">
+          <!-- Mini player preview -->
+          <div style="background:var(--bg-raised);border-radius:16px;padding:18px;display:flex;align-items:center;gap:14px">
+            <div id="preview-cover" style="width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,var(--purple),var(--cyan));display:flex;align-items:center;justify-content:center;font-size:1.8rem;flex-shrink:0">🎵</div>
+            <div style="flex:1;min-width:0">
+              <div id="preview-title" style="font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--txt-1)">Tu sencillo</div>
+              <div style="font-size:.8rem;color:var(--txt-3);margin-top:2px">Sencillo • 2026</div>
             </div>
+            <div class="waveform playing" style="height:24px">
+              <div class="waveform-bar" style="height:24px"></div>
+              <div class="waveform-bar" style="height:24px"></div>
+              <div class="waveform-bar" style="height:24px"></div>
+              <div class="waveform-bar" style="height:24px"></div>
+              <div class="waveform-bar" style="height:24px"></div>
+            </div>
+          </div>
         </div>
-
-        <div class="text-end">
-            <button type="submit" class="btn-upload-master px-5 py-3" style="font-size: 1.1rem;">
-                Publicar Sencillo Oficialmente
-            </button>
+        <div class="col-md-6">
+          <div class="d-flex flex-column gap-3">
+            <div class="d-flex align-items-center justify-content-between">
+              <div>
+                <div style="font-weight:600;font-size:.9rem">Monetización</div>
+                <div style="font-size:.78rem;color:var(--txt-3)">Activa regalías automáticamente</div>
+              </div>
+              <label class="toggle-switch"><input type="checkbox" checked onchange="vibeToast(this.checked?'Monetización activada 💰':'Monetización desactivada','info',2000)"><span class="toggle-track"></span></label>
+            </div>
+            <div class="d-flex align-items-center justify-content-between">
+              <div>
+                <div style="font-weight:600;font-size:.9rem">Publicación inmediata</div>
+                <div style="font-size:.78rem;color:var(--txt-3)">Disponible al subir el archivo</div>
+              </div>
+              <label class="toggle-switch"><input type="checkbox" checked onchange="vibeToast(this.checked?'Publicación inmediata':'Programar lanzamiento','info',2000)"><span class="toggle-track"></span></label>
+            </div>
+            <div class="d-flex align-items-center justify-content-between">
+              <div>
+                <div style="font-weight:600;font-size:.9rem">Permitir descarga (Premium)</div>
+                <div style="font-size:.78rem;color:var(--txt-3)">Solo usuarios con suscripción</div>
+              </div>
+              <label class="toggle-switch"><input type="checkbox" onchange="vibeToast('Configuración guardada','info',2000)"><span class="toggle-track"></span></label>
+            </div>
+          </div>
         </div>
-    </form>
+      </div>
+    </div>
 
+    <!-- Submit -->
+    <div class="d-flex justify-content-end gap-3">
+      <a href="{% url 'artista_dashboard' %}" class="text-decoration-none">
+        <button type="button" style="background:rgba(255,255,255,.05);border:1px solid var(--b2);color:var(--txt-2);border-radius:50px;padding:13px 28px;font-family:var(--font);font-weight:700;cursor:pointer;transition:all .25s" onmouseover="this.style.borderColor='var(--b3)'" onmouseout="this.style.borderColor='var(--b2)'">Cancelar</button>
+      </a>
+      <button type="submit" class="btn-upload-master" style="font-size:1rem;padding:14px 40px"
+              onclick="event.preventDefault();publishSingle()">
+        🚀 Publicar Sencillo Oficialmente
+      </button>
+    </div>
+  </form>
 </div>
+
+<style>
+.toggle-switch{position:relative;display:inline-block;width:46px;height:26px;flex-shrink:0}
+.toggle-switch input{opacity:0;width:0;height:0}
+.toggle-track{position:absolute;inset:0;border-radius:26px;background:var(--bg-raised);border:1px solid var(--b2);cursor:pointer;transition:all .3s}
+.toggle-track::after{content:'';position:absolute;left:3px;top:50%;transform:translateY(-50%);width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .3s var(--ease-bounce);box-shadow:0 2px 4px rgba(0,0,0,.3)}
+.toggle-switch input:checked+.toggle-track{background:var(--cyan);border-color:var(--cyan)}
+.toggle-switch input:checked+.toggle-track::after{transform:translateY(-50%) translateX(20px)}
+</style>
+
+<script>
+function updatePreview(val) {
+  const el = document.getElementById('preview-title');
+  if(el) el.textContent = val || 'Tu sencillo';
+}
+
+function previewSingleCover(input) {
+  if(!input.files[0]) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const zone = document.getElementById('single-cover-zone');
+    zone.style.backgroundImage = `url(${e.target.result})`;
+    zone.style.backgroundSize = 'cover';
+    zone.style.backgroundPosition = 'center';
+    document.getElementById('cover-ph').style.opacity = '0';
+    const prev = document.getElementById('preview-cover');
+    if(prev) { prev.style.backgroundImage=`url(${e.target.result})`;prev.style.backgroundSize='cover';prev.style.backgroundPosition='center';prev.textContent=''; }
+    vibeToast('Portada cargada 🎨','success',2000);
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
+function handleAudioSelect(input) {
+  if(!input.files[0]) return;
+  showAudioSelected(input.files[0]);
+}
+
+function handleAudioDrop(e) {
+  const file = e.dataTransfer.files[0];
+  if(!file) return;
+  if(!file.type.startsWith('audio/')) { vibeToast('Solo se aceptan archivos de audio','error'); return; }
+  document.getElementById('audio_file').files = e.dataTransfer.files;
+  showAudioSelected(file);
+}
+
+function showAudioSelected(file) {
+  document.getElementById('audio-placeholder').style.display = 'none';
+  document.getElementById('audio-selected').style.display = 'block';
+  document.getElementById('audio-filename').textContent = file.name;
+  const mb = (file.size/1024/1024).toFixed(2);
+  document.getElementById('audio-filesize').textContent = `${mb} MB · ${file.type.replace('audio/','').toUpperCase()}`;
+  vibeToast('Audio listo para subir 🎵','success',2000);
+}
+
+function publishSingle() {
+  const btn = document.querySelector('button[type="submit"]');
+  btn.textContent = '⌛ Publicando...';
+  btn.disabled = true;
+  btn.style.opacity = '.7';
+  // Simulate upload progress
+  let prog = 0;
+  const interval = setInterval(() => {
+    prog += Math.random() * 18;
+    if(prog >= 100) {
+      clearInterval(interval);
+      btn.textContent = '✅ Publicado exitosamente';
+      btn.style.background = 'linear-gradient(135deg,var(--green),#059669)';
+      vibeToast('¡Sencillo publicado! Ya está disponible en VibeSync 🚀','success',4000);
+      setTimeout(() => { window.location.href = "{% url 'artista_dashboard' %}"; }, 2000);
+    } else {
+      btn.textContent = `⌛ Subiendo ${Math.floor(prog)}%`;
+    }
+  }, 200);
+}
+</script>
 {% endblock %}

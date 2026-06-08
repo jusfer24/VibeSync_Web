@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VibeSync — Algo salió mal</title>
+  {% load static %}
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}?v=2.1">
+  <style>
+    body { background: var(--bg-void); overflow: hidden; }
+
+    .error-page {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      background: var(--bg-void);
+      position: relative; overflow: hidden;
+      padding: 40px 20px;
+      text-align: center;
+    }
+
+    /* Animated grid */
+    .error-grid {
+      position: absolute; inset: 0; pointer-events: none;
+      background-image:
+        linear-gradient(rgba(0,229,255,.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,229,255,.035) 1px, transparent 1px);
+      background-size: 50px 50px;
+      mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black 20%, transparent 100%);
+    }
+
+    /* Ambient orbs */
+    .err-orb { position: absolute; border-radius: 50%; filter: blur(100px); pointer-events: none; }
+    .err-orb-1 { width:400px;height:400px;top:-100px;left:-100px;  background:rgba(0,229,255,.06);   animation:float 12s ease-in-out infinite; }
+    .err-orb-2 { width:350px;height:350px;bottom:-80px;right:-80px; background:rgba(168,85,247,.06);  animation:float 9s ease-in-out infinite; animation-delay:-4s; }
+    .err-orb-3 { width:250px;height:250px;top:50%;left:50%;transform:translate(-50%,-50%); background:rgba(251,113,133,.04); animation:float 15s ease-in-out infinite; animation-delay:-8s; }
+
+    /* Error code */
+    .error-code {
+      font-size: clamp(7rem, 22vw, 15rem);
+      font-weight: 900;
+      letter-spacing: -0.06em;
+      line-height: 0.9;
+      background: linear-gradient(135deg, var(--cyan) 0%, var(--purple) 50%, var(--rose) 100%);
+      background-size: 200%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: gradient-drift 5s ease infinite;
+      position: relative; z-index: 2;
+      user-select: none;
+    }
+
+    /* Vinyl record */
+    .vinyl-wrap {
+      position: relative; z-index: 2;
+      margin: -20px auto 32px;
+      width: 160px; height: 160px;
+    }
+    .vinyl {
+      width: 160px; height: 160px;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 50% 50%, transparent 12%, #0a0a0a 13%, #0a0a0a 24%,
+          #141414 25%, #141414 38%, #0a0a0a 39%, #0a0a0a 52%,
+          #141414 53%, #141414 66%, #0a0a0a 67%, #0a0a0a 80%,
+          #141414 81%);
+      box-shadow:
+        0 0 0 3px #222,
+        0 0 40px rgba(0,229,255,.25),
+        0 0 80px rgba(168,85,247,.15),
+        0 20px 50px rgba(0,0,0,.8);
+      animation: rotate-disc 6s linear infinite paused;
+      transition: animation-play-state .3s;
+      cursor: pointer;
+      position: relative;
+    }
+    .vinyl.spinning { animation-play-state: running; }
+    .vinyl::before {
+      content: '';
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--cyan), var(--purple));
+      box-shadow: 0 0 20px var(--cyan-glow);
+    }
+    .vinyl::after {
+      content: '';
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: var(--bg-void);
+      z-index: 2;
+    }
+
+    /* Needle arm */
+    .needle {
+      position: absolute;
+      top: -10px; right: -20px;
+      width: 3px; height: 80px;
+      background: linear-gradient(to bottom, #aaa, #555);
+      border-radius: 2px;
+      transform-origin: top center;
+      transform: rotate(-30deg);
+      transition: transform .5s var(--ease-bounce);
+    }
+    .vinyl-wrap:hover .needle { transform: rotate(10deg); }
+    .needle::after {
+      content: '';
+      position: absolute; bottom: 0; left: -4px;
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: var(--cyan);
+      box-shadow: 0 0 10px var(--cyan-glow);
+    }
+
+    /* Scratch lines on vinyl */
+    .scratch {
+      position: absolute;
+      top: 50%; left: 50%;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,.04);
+    }
+
+    /* Message */
+    .error-title {
+      font-size: clamp(1.4rem, 4vw, 2rem);
+      font-weight: 800;
+      color: var(--txt-1);
+      margin-bottom: 12px;
+      position: relative; z-index: 2;
+    }
+    .error-sub {
+      color: var(--txt-2);
+      font-size: .95rem;
+      max-width: 420px;
+      margin: 0 auto 32px;
+      line-height: 1.7;
+      position: relative; z-index: 2;
+    }
+
+    /* Action buttons */
+    .error-actions {
+      display: flex; gap: 14px; flex-wrap: wrap;
+      justify-content: center;
+      position: relative; z-index: 2;
+    }
+    .btn-home {
+      background: linear-gradient(135deg, var(--cyan), #0096a6);
+      color: #000; border: none;
+      border-radius: var(--r-full);
+      padding: 13px 32px;
+      font-family: var(--font); font-weight: 800;
+      font-size: .95rem;
+      cursor: pointer;
+      transition: all .3s var(--ease-bounce);
+      text-decoration: none;
+      display: inline-flex; align-items: center; gap: 8px;
+    }
+    .btn-home:hover { transform: translateY(-3px); box-shadow: 0 12px 30px var(--cyan-glow); color: #000; }
+
+    .btn-back {
+      background: rgba(255,255,255,.05);
+      border: 1px solid var(--b2);
+      color: var(--txt-1);
+      border-radius: var(--r-full);
+      padding: 12px 28px;
+      font-family: var(--font); font-weight: 700;
+      font-size: .95rem;
+      cursor: pointer;
+      transition: all .25s;
+      text-decoration: none;
+      display: inline-flex; align-items: center; gap: 8px;
+    }
+    .btn-back:hover { border-color: var(--b3); background: rgba(255,255,255,.08); color: var(--txt-1); }
+
+    /* Floating notes */
+    .note { position: absolute; font-size: 1.4rem; animation: note-float var(--d) ease-in-out infinite; animation-delay: var(--dl); opacity: 0; pointer-events: none; z-index: 1; }
+
+    /* Error info card */
+    .error-info-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--b1);
+      border-radius: var(--r-lg);
+      padding: 16px 24px;
+      margin-top: 28px;
+      display: inline-flex; align-items: center; gap: 12px;
+      font-size: .85rem;
+      color: var(--txt-3);
+      position: relative; z-index: 2;
+      animation: fade-up .5s .4s var(--ease-out) both;
+    }
+    .error-info-card .code-pill {
+      background: rgba(251,113,133,.12);
+      border: 1px solid rgba(251,113,133,.3);
+      color: var(--rose);
+      border-radius: 6px;
+      padding: 3px 10px;
+      font-family: var(--font-mono);
+      font-size: .8rem;
+      font-weight: 700;
+    }
+
+    /* Scan line effect */
+    .scanline {
+      position: absolute; inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        rgba(0,0,0,0) 0px, rgba(0,0,0,0) 2px,
+        rgba(0,0,0,.03) 2px, rgba(0,0,0,.03) 4px
+      );
+      pointer-events: none; z-index: 1;
+    }
+  </style>
+</head>
+<body>
+<div class="error-page" id="error-page">
+  <div class="error-grid"></div>
+  <div class="scanline"></div>
+  <div class="err-orb err-orb-1"></div>
+  <div class="err-orb err-orb-2"></div>
+  <div class="err-orb err-orb-3"></div>
+
+  <!-- Floating music notes -->
+  <span class="note" style="left:8%; top:20%; --d:7s; --dl:0s">🎵</span>
+  <span class="note" style="left:15%;top:60%; --d:9s; --dl:-3s">🎶</span>
+  <span class="note" style="right:10%;top:30%; --d:6s; --dl:-1s">🎵</span>
+  <span class="note" style="right:20%;top:70%; --d:11s;--dl:-5s">🎼</span>
+  <span class="note" style="left:40%;top:10%; --d:8s; --dl:-2s">♪</span>
+  <span class="note" style="right:35%;top:80%; --d:10s;--dl:-6s">♫</span>
+
+  <!-- Error code big -->
+  <div class="error-code" id="error-code-display" style="animation:fade-up .6s both">
+    {{ error_code|default:"404" }}
+  </div>
+
+  <!-- Vinyl record -->
+  <div class="vinyl-wrap" style="animation:fade-up .6s .1s both" title="¡Haz clic para girar!">
+    <div class="vinyl" id="vinyl-disc" onclick="this.classList.toggle('spinning');document.getElementById('needle-arm').style.transform=this.classList.contains('spinning')?'rotate(10deg)':'rotate(-30deg)'">
+      <div class="scratch" style="width:40px;height:40px;margin-left:-20px;margin-top:-20px"></div>
+      <div class="scratch" style="width:80px;height:80px;margin-left:-40px;margin-top:-40px"></div>
+      <div class="scratch" style="width:120px;height:120px;margin-left:-60px;margin-top:-60px"></div>
+    </div>
+    <div class="needle" id="needle-arm"></div>
+  </div>
+
+  <!-- Message -->
+  <h1 class="error-title" style="animation:fade-up .5s .2s both">
+    {% if error_code == "500" %}
+      Algo se rompió en el estudio 🎛️
+    {% elif error_code == "403" %}
+      Zona restringida — acceso denegado 🔐
+    {% else %}
+      Esta frecuencia no existe 📻
+    {% endif %}
+  </h1>
+
+  <p class="error-sub" style="animation:fade-up .5s .25s both">
+    {% if error_code == "500" %}
+      Nuestros ingenieros de sonido están trabajando para resolver el problema.
+      Vuelve en unos minutos.
+    {% elif error_code == "403" %}
+      No tienes permisos para acceder a esta sección de VibeSync.
+      Verifica tu cuenta o inicia sesión.
+    {% else %}
+      La página que buscas se desafinó y no pudimos encontrarla.
+      Quizás fue movida, renombrada o simplemente dejó de existir.
+    {% endif %}
+  </p>
+
+  <!-- Buttons -->
+  <div class="error-actions" style="animation:fade-up .5s .3s both">
+    <a href="{% url 'oyente_dashboard' %}" class="btn-home">
+      🏠 Volver al inicio
+    </a>
+    <a href="javascript:history.back()" class="btn-back">
+      ← Ir atrás
+    </a>
+    {% if error_code != "403" %}
+    <a href="{% url 'explorar' %}" class="btn-back">
+      🔍 Explorar música
+    </a>
+    {% endif %}
+  </div>
+
+  <!-- Error info badge -->
+  <div class="error-info-card">
+    <svg width="14" height="14" fill="var(--txt-3)" viewBox="0 0 16 16">
+      <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+      <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+    </svg>
+    Código de error:
+    <span class="code-pill">HTTP {{ error_code|default:"404" }}</span>
+    <span style="color:var(--b3)">|</span>
+    <span>{{ error_message|default:"Página no encontrada" }}</span>
+  </div>
+
+  <!-- Suggestions -->
+  <div style="margin-top:40px;position:relative;z-index:2;animation:fade-up .5s .5s both">
+    <p style="font-size:.8rem;color:var(--txt-3);margin-bottom:16px;text-transform:uppercase;letter-spacing:.1em;font-weight:700">
+      Quizás te interese
+    </p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
+      <a href="{% url 'eventos' %}" style="background:rgba(0,229,255,.08);border:1px solid var(--cyan-border);color:var(--cyan);border-radius:50px;padding:7px 16px;font-size:.82rem;font-weight:700;text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(0,229,255,.15)'" onmouseout="this.style.background='rgba(0,229,255,.08)'">🎟️ Eventos</a>
+      <a href="{% url 'gamificacion' %}" style="background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.3);color:var(--purple);border-radius:50px;padding:7px 16px;font-size:.82rem;font-weight:700;text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(168,85,247,.15)'" onmouseout="this.style.background='rgba(168,85,247,.08)'">🏆 Insignias</a>
+      <a href="{% url 'biblioteca' %}" style="background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.3);color:var(--amber);border-radius:50px;padding:7px 16px;font-size:.82rem;font-weight:700;text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(251,191,36,.15)'" onmouseout="this.style.background='rgba(251,191,36,.08)'">📚 Biblioteca</a>
+      <a href="{% url 'perfil' %}" style="background:rgba(34,211,165,.08);border:1px solid rgba(34,211,165,.3);color:var(--green);border-radius:50px;padding:7px 16px;font-size:.82rem;font-weight:700;text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(34,211,165,.15)'" onmouseout="this.style.background='rgba(34,211,165,.08)'">👤 Perfil</a>
+    </div>
+  </div>
+</div>
+
+<script>
+// Easter egg: konami code spins the vinyl and plays a glitch effect
+let seq = [], konamiCode = [38,38,40,40,37,39,37,39,66,65];
+document.addEventListener('keydown', e => {
+  seq.push(e.keyCode);
+  if (seq.length > 10) seq.shift();
+  if (seq.join(',') === konamiCode.join(',')) {
+    document.getElementById('vinyl-disc').classList.add('spinning');
+    document.getElementById('error-code-display').style.animation = 'neon-flicker 0.5s 3, gradient-drift 5s ease infinite';
+    document.getElementById('needle-arm').style.transform = 'rotate(10deg)';
+    if (typeof vibeToast !== 'undefined')
+      vibeToast('🎮 ¡Código Konami! Eres un verdadero Vibe Master', 'success', 4000);
+  }
+});
+
+// Random glitch effect on error code
+setInterval(() => {
+  const el = document.getElementById('error-code-display');
+  if (!el) return;
+  el.style.transform = `skewX(${(Math.random()-.5)*4}deg) translateX(${(Math.random()-.5)*6}px)`;
+  setTimeout(() => { el.style.transform = ''; }, 80);
+}, 3000 + Math.random() * 2000);
+</script>
+</body>
+</html>

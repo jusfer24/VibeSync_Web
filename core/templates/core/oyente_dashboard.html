@@ -3,101 +3,101 @@
 {% block title %}Inicio{% endblock %}
 
 {% block content %}
-<div class="page-enter stagger-children" style="padding-bottom: 20px;">
+<style>
+  /* Estilos específicos para la animación de las notas musicales del hero */
+  .music-note {
+    position: absolute;
+    pointer-events: none;
+    font-size: var(--sz);
+    animation: note-float var(--dur) ease-in-out infinite;
+    animation-delay: var(--delay);
+    opacity: 0;
+    z-index: 1;
+  }
+  @keyframes note-float {
+    0%, 100% { transform: translateY(0) scale(1); opacity: 0; }
+    50% { transform: translateY(-20px) scale(1.1); opacity: .5; }
+  }
+</style>
 
-  <!-- ── Greeting + Mood ── -->
-  <section class="mood-section mb-5">
+<div class="page-enter stagger-children" style="padding-bottom: 20px; position: relative; z-index: 1">
 
-    <!-- Animated neon ring decoration -->
-    <div style="position:absolute;top:-60px;right:-60px;width:220px;height:220px;
-                border-radius:50%;border:1px solid var(--cyan-border);
-                opacity:.3;animation:spin 30s linear infinite;pointer-events:none"></div>
-    <div style="position:absolute;top:-40px;right:-40px;width:160px;height:160px;
-                border-radius:50%;border:1px solid rgba(168,85,247,.2);
-                animation:spin 20s linear infinite reverse;pointer-events:none"></div>
-
-    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3" style="position:relative;z-index:2">
-      <div>
-        <div class="section-badge mb-2">Mood-Sync ✦</div>
-        <h3 class="fw-bold mb-2" style="font-size:1.6rem">
-          Hola, <span class="glow-cyan">{{ nombre_usuario|default:"Oyente" }}</span> 👋
-        </h3>
-        <p style="color:var(--txt-2);max-width:420px;font-size:.95rem;line-height:1.6">
-          ¿Cómo te sientes hoy? Selecciona tu vibra y sintonizaremos la música perfecta para tu momento.
-        </p>
-        <form action="" method="GET" class="mood-grid mt-3">
-          <button type="submit" name="emocion" value="1" class="mood-btn mood-feliz">
-            <span>😊</span> Feliz
-          </button>
-          <button type="submit" name="emocion" value="2" class="mood-btn mood-melancolico">
-            <span>🌙</span> Melancólico
-          </button>
-          <button type="submit" name="emocion" value="3" class="mood-btn mood-energetico">
-            <span>⚡</span> Energético
-          </button>
-          <button type="submit" name="emocion" value="4" class="mood-btn mood-relajado">
-            <span>🍃</span> Relajado
-          </button>
-        </form>
-      </div>
-
-      <!-- Quick stats pill -->
-      <div style="background:rgba(0,229,255,.06);border:1px solid var(--cyan-border);
-                  border-radius:20px;padding:18px 24px;text-align:center;
-                  animation:fade-up .5s .3s both;min-width:140px">
-        <div style="font-size:2rem;font-weight:900;color:var(--cyan);letter-spacing:-.04em">
-          {{ estadisticas_rapidas.horas_hoy|default:"4.2" }}h
+  <section style="position:relative;overflow:hidden;border-radius:24px;margin-bottom:36px" id="mood-hero">
+    <div id="plx-bg" style="position:absolute;inset:-30px;
+      background:radial-gradient(ellipse 80% 100% at 15% 50%,rgba(0,229,255,.18) 0%,transparent 55%),
+                 radial-gradient(ellipse 70% 80% at 85% 25%,rgba(168,85,247,.14) 0%,transparent 55%),
+                 radial-gradient(ellipse 60% 70% at 50% 100%,rgba(251,191,36,.07) 0%,transparent 60%),
+                 var(--bg-surface);
+      will-change:transform;transition:transform .1s linear;border-radius:24px"></div>
+    <div style="position:absolute;inset:0;background:linear-gradient(160deg,rgba(0,229,255,.04),rgba(168,85,247,.03),rgba(8,12,22,.85) 80%);z-index:1;border-radius:24px"></div>
+    
+    <span class="music-note" style="left:4%;top:20%;--sz:2rem;--dur:5s;--delay:0s">🎵</span>
+    <span class="music-note" style="left:8%;top:60%;--sz:1.2rem;--dur:7s;--delay:-2s">♪</span>
+    <span class="music-note" style="right:6%;top:25%;--sz:1.6rem;--dur:6s;--delay:-1s">🎶</span>
+    <span class="music-note" style="right:12%;top:65%;--sz:1rem;--dur:9s;--delay:-3s">♫</span>
+    <span class="music-note" style="left:48%;top:8%;--sz:1.3rem;--dur:8s;--delay:-4s">🎼</span>
+    
+    <div id="plx-content" style="position:relative;z-index:2;padding:48px 40px">
+      <div class="d-flex justify-content-between align-items-start flex-wrap gap-4">
+        <div style="max-width:520px">
+          <div class="glass-pill mb-3"><span class="dot"></span>Mood-Sync — Vibra personalizada para ti</div>
+          <h2 class="fw-bold mb-3" style="font-size:clamp(1.6rem,3vw,2.4rem);letter-spacing:-.03em;line-height:1.2">
+            Hola, <span class="glow-cyan">{{ nombre_usuario|default:"Oyente" }}</span> 👋<br>
+            <span style="color:var(--txt-2);font-size:.7em;font-weight:500">¿Cómo te sientes hoy?</span>
+          </h2>
+          <form action="" method="GET">
+            <div class="mood-grid">
+              <button type="submit" name="emocion" value="1" class="mood-btn mood-feliz"><span>😊</span> Feliz</button>
+              <button type="submit" name="emocion" value="2" class="mood-btn mood-melancolico"><span>🌙</span> Melancólico</button>
+              <button type="submit" name="emocion" value="3" class="mood-btn mood-energetico"><span>⚡</span> Energético</button>
+              <button type="submit" name="emocion" value="4" class="mood-btn mood-relajado"><span>🍃</span> Relajado</button>
+            </div>
+          </form>
+          
+          {% if request.GET.emocion %}
+          <div style="margin-top:16px;display:inline-flex;align-items:center;gap:10px;background:rgba(0,229,255,.08);border:1px solid var(--cyan-border);border-radius:50px;padding:8px 18px;font-size:.85rem;font-weight:600;color:var(--cyan);animation:fade-up .4s both">
+            <div class="waveform playing" style="height:16px">
+              <div class="waveform-bar" style="height:16px"></div><div class="waveform-bar" style="height:16px"></div><div class="waveform-bar" style="height:16px"></div><div class="waveform-bar" style="height:16px"></div><div class="waveform-bar" style="height:16px"></div>
+            </div>
+            Curada para tu ánimo ✨
+          </div>
+          {% endif %}
         </div>
-        <div style="font-size:.72rem;font-weight:700;color:var(--txt-3);text-transform:uppercase;letter-spacing:.1em">Hoy escuchado</div>
-        <div style="height:1px;background:var(--b2);margin:10px 0"></div>
-        <div style="font-size:1.3rem;font-weight:800;color:var(--txt-1)">
-          {{ estadisticas_rapidas.canciones_hoy|default:"28" }}
+        
+        <div style="display:flex;flex-direction:column;gap:10px;min-width:150px;animation:fade-up .5s .3s both">
+          <div style="background:rgba(0,229,255,.08);border:1px solid var(--cyan-border);border-radius:16px;padding:16px 22px;text-align:center;box-shadow:0 0 20px var(--cyan-dim)">
+            <div style="font-size:2.2rem;font-weight:900;color:var(--cyan);letter-spacing:-.04em">{{ stats.horas|default:"4.2" }}h</div>
+            <div style="font-size:.7rem;color:var(--txt-3);text-transform:uppercase;letter-spacing:.1em;font-weight:700">Hoy</div>
+          </div>
+          <div style="background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.3);border-radius:16px;padding:16px 22px;text-align:center">
+            <div style="font-size:2.2rem;font-weight:900;color:var(--purple);letter-spacing:-.04em">{{ stats.canciones|default:"28" }}</div>
+            <div style="font-size:.7rem;color:var(--txt-3);text-transform:uppercase;letter-spacing:.1em;font-weight:700">Canciones</div>
+          </div>
+          <div style="background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.3);border-radius:16px;padding:16px 22px;text-align:center">
+            <div style="font-size:2.2rem;font-weight:900;color:var(--amber);letter-spacing:-.04em">7🔥</div>
+            <div style="font-size:.7rem;color:var(--txt-3);text-transform:uppercase;letter-spacing:.1em;font-weight:700">Racha</div>
+          </div>
         </div>
-        <div style="font-size:.72rem;font-weight:700;color:var(--txt-3);text-transform:uppercase;letter-spacing:.1em">Canciones</div>
       </div>
     </div>
-
-    <!-- Active mood indicator -->
-    {% if request.GET.emocion %}
-    <div style="margin-top:20px;padding:14px 20px;background:rgba(0,229,255,.07);
-                border:1px solid var(--cyan-border);border-radius:14px;
-                display:flex;align-items:center;gap:12px;animation:fade-up .4s both">
-      <div class="waveform playing" style="height:20px">
-        <div class="waveform-bar" style="height:20px"></div>
-        <div class="waveform-bar" style="height:20px"></div>
-        <div class="waveform-bar" style="height:20px"></div>
-        <div class="waveform-bar" style="height:20px"></div>
-        <div class="waveform-bar" style="height:20px"></div>
-      </div>
-      <span style="font-size:.9rem;font-weight:600;color:var(--cyan)">
-        Mood-Sync activo — curada para tu estado de ánimo ✨
-      </span>
-    </div>
-    {% endif %}
   </section>
 
-  <!-- ── Volver a escuchar ── -->
   <section class="mb-5">
     <div class="d-flex justify-content-between align-items-center mb-1">
       <div>
-        <div class="section-badge">Historial</div>
-        <h4 class="fw-bold">Volver a escuchar</h4>
+        <div class="section-badge">▶ Historial</div>
+        <h4 class="fw-bold mb-0">Volver a escuchar</h4>
       </div>
-      <a href="{% url 'biblioteca' %}?tab=likes" style="font-size:.85rem;color:var(--cyan);text-decoration:none;font-weight:600">
-        Ver todo →
-      </a>
+      <a href="{% url 'biblioteca' %}?tab=likes" style="font-size:.85rem;color:var(--cyan);text-decoration:none;font-weight:600">Ver todo →</a>
     </div>
     <div class="scroll-row">
       {% for item in historial %}
       <a href="{% url 'album' %}" class="text-decoration-none">
         <div class="music-card">
           <div class="img-wrapper">
-            <img src="{{ item.portada_url|default:'https://placehold.co/300x300/0d1422/00e5ff?text=♫' }}"
-                 alt="{{ item.nombre }}" loading="lazy">
+            <img src="{{ item.portada_url|default:'https://placehold.co/300x300/0d1422/00e5ff?text=♫' }}" alt="{{ item.nombre }}" loading="lazy">
             <div class="play-btn-overlay">
-              <svg width="22" height="22" fill="currentColor" viewBox="0 0 16 16">
-                <path d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/>
-              </svg>
+              <svg width="22" height="22" fill="currentColor" viewBox="0 0 16 16"><path d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/></svg>
             </div>
           </div>
           <h6>{{ item.nombre }}</h6>
@@ -105,41 +105,30 @@
         </div>
       </a>
       {% empty %}
-      {% for i in "12345" %}
-      <div class="music-card">
-        <div class="img-wrapper">
-          <div class="skeleton" style="width:100%;aspect-ratio:1;border-radius:10px"></div>
-        </div>
-        <div class="skeleton" style="height:14px;border-radius:4px;margin-bottom:6px"></div>
-        <div class="skeleton" style="height:12px;border-radius:4px;width:65%"></div>
-      </div>
-      {% endfor %}
+      <a href="{% url 'album' %}" class="text-decoration-none"><div class="music-card"><div class="img-wrapper"><img src="https://placehold.co/300x300/001a1a/22d3a5?text=EC" alt="" loading="lazy"><div class="play-btn-overlay"><svg width="22" height="22" fill="currentColor" viewBox="0 0 16 16"><path d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/></svg></div></div><h6>Ecos del Cotopaxi</h6><small>MatS</small></div></a>
+      <a href="{% url 'album' %}" class="text-decoration-none"><div class="music-card"><div class="img-wrapper"><img src="https://placehold.co/300x300/1a0d2e/a855f7?text=FO" alt="" loading="lazy"><div class="play-btn-overlay" style="background:var(--purple)"><svg width="22" height="22" fill="currentColor" viewBox="0 0 16 16"><path d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/></svg></div></div><h6>Frog4Ever OST</h6><small>CamiR</small></div></a>
+      <a href="{% url 'album' %}" class="text-decoration-none"><div class="music-card"><div class="img-wrapper"><img src="https://placehold.co/300x300/0d2210/22d3a5?text=NQ" alt="" loading="lazy"><div class="play-btn-overlay" style="background:var(--green)"><svg width="22" height="22" fill="currentColor" viewBox="0 0 16 16"><path d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/></svg></div></div><h6>Noches de Quito</h6><small>Guardarraya</small></div></a>
+      <a href="{% url 'album' %}" class="text-decoration-none"><div class="music-card"><div class="img-wrapper"><img src="https://placehold.co/300x300/1c1000/fbbf24?text=AM" alt="" loading="lazy"><div class="play-btn-overlay" style="background:var(--amber)"><svg width="22" height="22" fill="currentColor" viewBox="0 0 16 16"><path d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/></svg></div></div><h6>Amarilla</h6><small>La Máquina Camaleón</small></div></a>
       {% endfor %}
     </div>
   </section>
 
-  <!-- ── Artistas Locales ── -->
   <section class="mb-5">
     <div class="d-flex justify-content-between align-items-center mb-1">
       <div>
-        <div class="section-badge">Descubre</div>
-        <h4 class="fw-bold">Artistas Locales <span style="font-size:.85rem;color:var(--txt-2);font-weight:500">{{ pais_usuario|default:"Ecuador" }}</span></h4>
+        <div class="section-badge" style="color:var(--purple)"><span style="background:var(--purple);width:18px;height:2px;border-radius:1px;display:inline-block"></span> 🎤 Artistas</div>
+        <h4 class="fw-bold mb-0">Artistas Locales <span style="font-size:.85rem;color:var(--txt-2);font-weight:500">{{ pais_usuario|default:"Ecuador" }}</span></h4>
       </div>
-      <a href="{% url 'explorar' %}" style="font-size:.85rem;color:var(--cyan);text-decoration:none;font-weight:600">
-        Explorar →
-      </a>
+      <a href="{% url 'explorar' %}" style="font-size:.85rem;color:var(--purple);text-decoration:none;font-weight:600">Explorar →</a>
     </div>
     <div class="scroll-row">
       {% for artista in artistas_locales %}
       <a href="{% url 'artista' %}" class="text-decoration-none">
         <div class="music-card artist-card">
           <div class="img-wrapper">
-            <img src="{{ artista.foto_url|default:'https://placehold.co/300x300/0a3d2e/00e5ff?text=' }}{{ artista.apodoArtista|slice:':1' }}"
-                 alt="{{ artista.apodoArtista }}" loading="lazy">
-            <div class="play-btn-overlay">
-              <svg width="22" height="22" fill="currentColor" viewBox="0 0 16 16">
-                <path d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/>
-              </svg>
+            <img src="{{ artista.foto_url|default:'https://placehold.co/300x300/1a0d2e/a855f7?text=A' }}" alt="" loading="lazy">
+            <div class="play-btn-overlay" style="background:var(--purple);box-shadow:0 6px 20px var(--purple-glow)">
+              <svg width="22" height="22" fill="currentColor" viewBox="0 0 16 16"><path d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/></svg>
             </div>
           </div>
           <h6 class="text-center mt-2">{{ artista.apodoArtista }}</h6>
@@ -147,134 +136,77 @@
         </div>
       </a>
       {% empty %}
-      <!-- Demo artists -->
-      {% for item in "123456" %}
-      <div class="music-card artist-card">
-        <div class="img-wrapper">
-          <div class="skeleton" style="width:100%;aspect-ratio:1;border-radius:50%"></div>
-        </div>
-        <div class="skeleton" style="height:14px;border-radius:4px;margin:10px auto 6px;width:80%"></div>
-        <div class="skeleton" style="height:12px;border-radius:4px;margin:0 auto;width:55%"></div>
-      </div>
-      {% endfor %}
+      <a href="{% url 'artista' %}" class="text-decoration-none"><div class="music-card artist-card"><div class="img-wrapper"><img src="https://placehold.co/300x300/0d2210/22d3a5?text=G" alt="" loading="lazy"><div class="play-btn-overlay" style="background:var(--green)"><svg width="22" height="22" fill="currentColor" viewBox="0 0 16 16"><path d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/></svg></div></div><h6 class="text-center mt-2">Guardarraya</h6><small class="d-block text-center">Rock Andino</small></div></a>
+      <a href="{% url 'artista' %}" class="text-decoration-none"><div class="music-card artist-card"><div class="img-wrapper"><img src="https://placehold.co/300x300/1c1000/fbbf24?text=L" alt="" loading="lazy"><div class="play-btn-overlay" style="background:var(--amber)"><svg width="22" height="22" fill="currentColor" viewBox="0 0 16 16"><path d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/></svg></div></div><h6 class="text-center mt-2">La Máquina Camaleón</h6><small class="d-block text-center">Indie Rock</small></div></a>
+      <a href="{% url 'artista' %}" class="text-decoration-none"><div class="music-card artist-card"><div class="img-wrapper"><img src="https://placehold.co/300x300/1a0d2e/a855f7?text=DJ" alt="" loading="lazy"><div class="play-btn-overlay" style="background:var(--purple)"><svg width="22" height="22" fill="currentColor" viewBox="0 0 16 16"><path d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/></svg></div></div><h6 class="text-center mt-2">DJ Santi</h6><small class="d-block text-center">House / EDM</small></div></a>
       {% endfor %}
     </div>
   </section>
 
-  <!-- ── Trending + Géneros (side by side) ── -->
   <div class="row g-4 mb-5">
-
-    <!-- Trending -->
+    
     <div class="col-lg-8">
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <div>
-          <div class="section-badge">🔥 Hot</div>
-          <h4 class="fw-bold mb-0">Tendencia ahora</h4>
-        </div>
-      </div>
-      <div class="scroll-row pb-2">
-        {% for tendencia in tendencias %}
+      <div class="section-badge" style="color:var(--rose)"><span style="background:var(--rose);width:18px;height:2px;border-radius:1px;display:inline-block"></span> 🔥 Hot</div>
+      <h4 class="fw-bold mb-3">Tendencia</h4>
+      <div class="scroll-row">
+        {% for t in tendencias %}
         <div class="music-card">
           <div class="img-wrapper">
-            <img src="{{ tendencia.portada_url|default:'https://placehold.co/300x300/1a0d2e/a855f7?text=🔥' }}"
-                 alt="{{ tendencia.nombre }}" loading="lazy">
-            <!-- Rank badge -->
-            <div style="position:absolute;top:8px;left:8px;background:rgba(0,0,0,.7);
-                        backdrop-filter:blur(6px);border-radius:6px;
-                        padding:3px 8px;font-size:.72rem;font-weight:800;color:var(--cyan)">
-              #{{ forloop.counter }}
-            </div>
-            <div class="play-btn-overlay">
-              <svg width="22" height="22" fill="currentColor" viewBox="0 0 16 16">
-                <path d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/>
-              </svg>
-            </div>
+            <img src="{{ t.portada_url|default:'https://placehold.co/300x300/1a0010/fb7185?text=🔥' }}" alt="" loading="lazy">
+            <div style="position:absolute;top:8px;left:8px;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);border-radius:6px;padding:3px 8px;font-size:.72rem;font-weight:800;color:var(--rose)">#{{ forloop.counter }}</div>
+            <div class="play-btn-overlay" style="background:var(--rose)"><svg width="22" height="22" fill="currentColor" viewBox="0 0 16 16"><path d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/></svg></div>
           </div>
-          <h6>{{ tendencia.nombre }}</h6>
-          <small>VibeSync Charts</small>
+          <h6>{{ t.nombre }}</h6>
+          <small>Charts</small>
         </div>
         {% empty %}
         {% for i in "12345" %}
         <div class="music-card">
-          <div class="img-wrapper"><div class="skeleton" style="width:100%;aspect-ratio:1;border-radius:10px"></div></div>
-          <div class="skeleton" style="height:14px;border-radius:4px;margin-bottom:6px"></div>
-          <div class="skeleton" style="height:12px;border-radius:4px;width:60%"></div>
+          <div class="img-wrapper">
+            <img src="https://placehold.co/300x300/1a0010/fb7185?text={{ forloop.counter }}" alt="" loading="lazy">
+            <div style="position:absolute;top:8px;left:8px;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);border-radius:6px;padding:3px 8px;font-size:.72rem;font-weight:800;color:var(--rose)">#{{ forloop.counter }}</div>
+            <div class="play-btn-overlay" style="background:var(--rose)"><svg width="22" height="22" fill="currentColor" viewBox="0 0 16 16"><path d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/></svg></div>
+          </div>
+          <h6>Hit #{{ forloop.counter }}</h6>
+          <small>VibeSync Charts</small>
         </div>
         {% endfor %}
         {% endfor %}
       </div>
     </div>
 
-    <!-- Genre quick-picks -->
     <div class="col-lg-4">
-      <div class="section-badge mb-2">Géneros</div>
-      <h4 class="fw-bold mb-3">Explorar géneros</h4>
+      <div class="section-badge" style="color:var(--amber)"><span style="background:var(--amber);width:18px;height:2px;border-radius:1px;display:inline-block"></span> 🎸 Géneros</div>
+      <h4 class="fw-bold mb-3">Explorar</h4>
       <div class="d-flex flex-column gap-2">
-        {% for g in generos_rapidos|default:"" %}
-        <a href="{% url 'explorar' %}?q={{ g.nombre }}" class="text-decoration-none">
-          <div style="background:{{ g.bg|default:'var(--bg-surface)' }};
-                      border:1px solid var(--b1);border-radius:14px;
-                      padding:14px 18px;display:flex;align-items:center;gap:14px;
-                      transition:all .25s;cursor:pointer"
-               onmouseover="this.style.borderColor='var(--cyan-border)';this.style.transform='translateX(4px)'"
-               onmouseout="this.style.borderColor='var(--b1)';this.style.transform=''">
-            <span style="font-size:1.6rem">{{ g.icono|default:"🎵" }}</span>
-            <div>
-              <div style="font-weight:700;font-size:.92rem">{{ g.nombre }}</div>
-              <div style="font-size:.76rem;color:var(--txt-3)">{{ g.canciones|default:"0" }} canciones</div>
-            </div>
-            <svg class="ms-auto" width="14" height="14" fill="var(--txt-3)" viewBox="0 0 16 16">
-              <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
-            </svg>
-          </div>
-        </a>
-        {% empty %}
-        {% for g in generos_demo %}
-        <div style="background:var(--bg-surface);border:1px solid var(--b1);border-radius:14px;
-                    padding:14px 18px;display:flex;align-items:center;gap:14px">
-          <div class="skeleton" style="width:40px;height:40px;border-radius:8px;flex-shrink:0"></div>
-          <div style="flex:1">
-            <div class="skeleton" style="height:13px;border-radius:4px;margin-bottom:6px"></div>
-            <div class="skeleton" style="height:11px;border-radius:4px;width:60%"></div>
-          </div>
-        </div>
-        {% endfor %}
-        <!-- Static fallback genre cards -->
-        {% with genres="Synthwave Andino|🌌|Indie Rock|🎸|House / EDM|🎛️|Pop Urbano|🌟" %}
         <a href="{% url 'explorar' %}?q=synthwave" class="text-decoration-none">
-          <div class="genre-quick-card" style="background:linear-gradient(135deg,rgba(0,229,255,.08),var(--bg-surface));border:1px solid var(--b1);border-radius:14px;padding:14px 18px;display:flex;align-items:center;gap:14px;transition:all .25s"
-               onmouseover="this.style.borderColor='var(--cyan-border)';this.style.transform='translateX(4px)'"
-               onmouseout="this.style.borderColor='var(--b1)';this.style.transform=''">
-            <span style="font-size:1.6rem">🌌</span>
-            <div><div style="font-weight:700;font-size:.92rem">Synthwave Andino</div><div style="font-size:.76rem;color:var(--txt-3)">8 géneros</div></div>
-            <svg class="ms-auto" width="14" height="14" fill="var(--txt-3)" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/></svg>
+          <div style="background:linear-gradient(135deg,rgba(0,229,255,.09),var(--bg-surface));border:1px solid var(--b1);border-radius:14px;padding:13px 18px;display:flex;align-items:center;gap:12px;transition:all .25s" onmouseover="this.style.borderColor='var(--cyan-border)';this.style.transform='translateX(4px)'" onmouseout="this.style.borderColor='var(--b1)';this.style.transform=''">
+            <span style="font-size:1.5rem">🌌</span>
+            <div style="flex:1"><div style="font-weight:700;font-size:.9rem">Synthwave Andino</div><div style="font-size:.75rem;color:var(--txt-3)">8 subgéneros</div></div>
           </div>
         </a>
         <a href="{% url 'explorar' %}?q=indie+rock" class="text-decoration-none">
-          <div style="background:linear-gradient(135deg,rgba(168,85,247,.07),var(--bg-surface));border:1px solid var(--b1);border-radius:14px;padding:14px 18px;display:flex;align-items:center;gap:14px;transition:all .25s"
-               onmouseover="this.style.borderColor='rgba(168,85,247,.4)';this.style.transform='translateX(4px)'"
-               onmouseout="this.style.borderColor='var(--b1)';this.style.transform=''">
-            <span style="font-size:1.6rem">🎸</span>
-            <div><div style="font-weight:700;font-size:.92rem">Indie Rock</div><div style="font-size:.76rem;color:var(--txt-3)">7 géneros</div></div>
-            <svg class="ms-auto" width="14" height="14" fill="var(--txt-3)" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/></svg>
+          <div style="background:linear-gradient(135deg,rgba(168,85,247,.08),var(--bg-surface));border:1px solid var(--b1);border-radius:14px;padding:13px 18px;display:flex;align-items:center;gap:12px;transition:all .25s" onmouseover="this.style.borderColor='rgba(168,85,247,.4)';this.style.transform='translateX(4px)'" onmouseout="this.style.borderColor='var(--b1)';this.style.transform=''">
+            <span style="font-size:1.5rem">🎸</span>
+            <div style="flex:1"><div style="font-weight:700;font-size:.9rem">Indie Rock</div><div style="font-size:.75rem;color:var(--txt-3)">7 subgéneros</div></div>
           </div>
         </a>
         <a href="{% url 'explorar' %}?q=house+edm" class="text-decoration-none">
-          <div style="background:linear-gradient(135deg,rgba(251,191,36,.05),var(--bg-surface));border:1px solid var(--b1);border-radius:14px;padding:14px 18px;display:flex;align-items:center;gap:14px;transition:all .25s"
-               onmouseover="this.style.borderColor='rgba(251,191,36,.3)';this.style.transform='translateX(4px)'"
-               onmouseout="this.style.borderColor='var(--b1)';this.style.transform=''">
-            <span style="font-size:1.6rem">🎛️</span>
-            <div><div style="font-weight:700;font-size:.92rem">House / EDM</div><div style="font-size:.76rem;color:var(--txt-3)">6 géneros</div></div>
-            <svg class="ms-auto" width="14" height="14" fill="var(--txt-3)" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/></svg>
+          <div style="background:linear-gradient(135deg,rgba(34,211,165,.07),var(--bg-surface));border:1px solid var(--b1);border-radius:14px;padding:13px 18px;display:flex;align-items:center;gap:12px;transition:all .25s" onmouseover="this.style.borderColor='rgba(34,211,165,.4)';this.style.transform='translateX(4px)'" onmouseout="this.style.borderColor='var(--b1)';this.style.transform=''">
+            <span style="font-size:1.5rem">🎛️</span>
+            <div style="flex:1"><div style="font-weight:700;font-size:.9rem">House / EDM</div><div style="font-size:.75rem;color:var(--txt-3)">6 subgéneros</div></div>
           </div>
         </a>
-        {% endwith %}
-        {% endfor %}
+        <a href="{% url 'explorar' %}?q=pop+urbano" class="text-decoration-none">
+          <div style="background:linear-gradient(135deg,rgba(251,191,36,.06),var(--bg-surface));border:1px solid var(--b1);border-radius:14px;padding:13px 18px;display:flex;align-items:center;gap:12px;transition:all .25s" onmouseover="this.style.borderColor='rgba(251,191,36,.4)';this.style.transform='translateX(4px)'" onmouseout="this.style.borderColor='var(--b1)';this.style.transform=''">
+            <span style="font-size:1.5rem">🎤</span>
+            <div style="flex:1"><div style="font-weight:700;font-size:.9rem">Pop Urbano</div><div style="font-size:.75rem;color:var(--txt-3)">5 subgéneros</div></div>
+          </div>
+        </a>
       </div>
     </div>
   </div>
 
-  <!-- ── Nuevos lanzamientos ── -->
   <section class="mb-4">
     <div class="d-flex justify-content-between align-items-center mb-1">
       <div>
@@ -289,7 +221,6 @@
           <div class="img-wrapper">
             <img src="{{ album.portada_url|default:'https://placehold.co/300x300' }}" alt="{{ album.nombre }}">
             <div class="play-btn-overlay"><svg width="22" height="22" fill="currentColor" viewBox="0 0 16 16"><path d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/></svg></div>
-            <!-- NEW badge -->
             <div style="position:absolute;top:8px;right:8px;background:var(--cyan);color:#000;font-size:.65rem;font-weight:800;padding:3px 8px;border-radius:6px;letter-spacing:.06em">NUEVO</div>
           </div>
           <h6>{{ album.nombre }}</h6>
@@ -297,25 +228,35 @@
         </div>
       </a>
       {% empty %}
-      <!-- Fallback static cards -->
-      <a href="{% url 'album' %}" class="text-decoration-none">
-        <div class="music-card"><div class="img-wrapper"><img src="https://placehold.co/300x300/0d1422/00e5ff?text=EC" alt="Album" loading="lazy"><div style="position:absolute;top:8px;right:8px;background:var(--cyan);color:#000;font-size:.65rem;font-weight:800;padding:3px 8px;border-radius:6px">NUEVO</div><div class="play-btn-overlay"><svg width="22" height="22" fill="currentColor" viewBox="0 0 16 16"><path d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/></svg></div></div><h6>Ecos del Cotopaxi</h6><small>MatS</small></div>
-      </a>
-      <a href="{% url 'album' %}" class="text-decoration-none">
-        <div class="music-card"><div class="img-wrapper"><img src="https://placehold.co/300x300/1a0d2e/a855f7?text=FO" alt="Album" loading="lazy"><div class="play-btn-overlay"><svg width="22" height="22" fill="currentColor" viewBox="0 0 16 16"><path d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/></svg></div></div><h6>Frog4Ever OST</h6><small>CamiR</small></div>
-      </a>
-      <a href="{% url 'album' %}" class="text-decoration-none">
-        <div class="music-card"><div class="img-wrapper"><img src="https://placehold.co/300x300/0d2210/22d3a5?text=NQ" alt="Album" loading="lazy"><div class="play-btn-overlay"><svg width="22" height="22" fill="currentColor" viewBox="0 0 16 16"><path d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/></svg></div></div><h6>Noches de Quito</h6><small>Guardarraya</small></div>
-      </a>
-      <a href="{% url 'album' %}" class="text-decoration-none">
-        <div class="music-card"><div class="img-wrapper"><img src="https://placehold.co/300x300/1c1000/fbbf24?text=AM" alt="Album" loading="lazy"><div class="play-btn-overlay"><svg width="22" height="22" fill="currentColor" viewBox="0 0 16 16"><path d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/></svg></div></div><h6>Amarilla</h6><small>La Máquina Camaleón</small></div>
-      </a>
-      <a href="{% url 'album' %}" class="text-decoration-none">
-        <div class="music-card"><div class="img-wrapper"><img src="https://placehold.co/300x300/0d1a2a/60a5fa?text=SI" alt="Album" loading="lazy"><div class="play-btn-overlay"><svg width="22" height="22" fill="currentColor" viewBox="0 0 16 16"><path d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/></svg></div></div><h6>Sintético</h6><small>DJ Santi</small></div>
-      </a>
+      <a href="{% url 'album' %}" class="text-decoration-none"><div class="music-card"><div class="img-wrapper"><img src="https://placehold.co/300x300/0d1422/00e5ff?text=EC" alt="Album" loading="lazy"><div style="position:absolute;top:8px;right:8px;background:var(--cyan);color:#000;font-size:.65rem;font-weight:800;padding:3px 8px;border-radius:6px">NUEVO</div><div class="play-btn-overlay"><svg width="22" height="22" fill="currentColor" viewBox="0 0 16 16"><path d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/></svg></div></div><h6>Ecos del Cotopaxi</h6><small>MatS</small></div></a>
+      <a href="{% url 'album' %}" class="text-decoration-none"><div class="music-card"><div class="img-wrapper"><img src="https://placehold.co/300x300/1a0d2e/a855f7?text=FO" alt="Album" loading="lazy"><div class="play-btn-overlay"><svg width="22" height="22" fill="currentColor" viewBox="0 0 16 16"><path d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/></svg></div></div><h6>Frog4Ever OST</h6><small>CamiR</small></div></a>
+      <a href="{% url 'album' %}" class="text-decoration-none"><div class="music-card"><div class="img-wrapper"><img src="https://placehold.co/300x300/0d2210/22d3a5?text=NQ" alt="Album" loading="lazy"><div class="play-btn-overlay"><svg width="22" height="22" fill="currentColor" viewBox="0 0 16 16"><path d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/></svg></div></div><h6>Noches de Quito</h6><small>Guardarraya</small></div></a>
+      <a href="{% url 'album' %}" class="text-decoration-none"><div class="music-card"><div class="img-wrapper"><img src="https://placehold.co/300x300/1c1000/fbbf24?text=AM" alt="Album" loading="lazy"><div class="play-btn-overlay"><svg width="22" height="22" fill="currentColor" viewBox="0 0 16 16"><path d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/></svg></div></div><h6>Amarilla</h6><small>La Máquina Camaleón</small></div></a>
+      <a href="{% url 'album' %}" class="text-decoration-none"><div class="music-card"><div class="img-wrapper"><img src="https://placehold.co/300x300/0d1a2a/60a5fa?text=SI" alt="Album" loading="lazy"><div class="play-btn-overlay"><svg width="22" height="22" fill="currentColor" viewBox="0 0 16 16"><path d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/></svg></div></div><h6>Sintético</h6><small>DJ Santi</small></div></a>
       {% endfor %}
     </div>
   </section>
 
 </div>
+
+<script>
+  const plxBg = document.getElementById('plx-bg');
+  const plxContent = document.getElementById('plx-content');
+  if (plxBg) {
+    document.addEventListener('mousemove', e => {
+      const x = (e.clientX / window.innerWidth  - 0.5) * 22;
+      const y = (e.clientY / window.innerHeight - 0.5) * 14;
+      plxBg.style.transform = `translate(${x}px, ${y}px) scale(1.06)`;
+      if (plxContent) plxContent.style.transform = `translate(${-x*.1}px,${-y*.07}px)`;
+    });
+    
+    // Parallax en scroll
+    const mc = document.querySelector('.main-content');
+    if (mc) {
+      mc.addEventListener('scroll', function() {
+        plxBg.style.transform = `translateY(${this.scrollTop * .22}px) scale(1.06)`;
+      });
+    }
+  }
+</script>
 {% endblock %}

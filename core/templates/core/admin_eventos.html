@@ -1,63 +1,309 @@
 {% extends 'core/base.html' %}
 {% load static %}
 {% block title %}Gestionar Eventos{% endblock %}
-
 {% block content %}
-<div class="container-fluid p-0 pb-5">
-    <div class="d-flex justify-content-between align-items-end mb-4 mt-2 flex-wrap gap-3">
-        <div>
-            <span class="text-uppercase text-danger fw-bold" style="letter-spacing: 2px; font-size: 0.8rem;">Control de Contenido</span>
-            <h2 class="fw-bold mb-0 text-white">Gestionar Eventos</h2>
-        </div>
-    </div>
+<div class="page-enter" style="padding-bottom:20px">
 
-    <div class="premium-card p-0 overflow-hidden">
-        <div class="table-responsive">
-            <table class="table table-dark table-hover m-0" style="background-color: transparent;" id="events-table">
-                <thead style="background-color: rgba(255,255,255,0.02);">
-                    <tr>
-                        <th class="py-3 px-4 text-muted fw-bold">EVENTO</th>
-                        <th class="py-3 px-4 text-muted fw-bold">FECHA</th>
-                        <th class="py-3 px-4 text-muted fw-bold">LUGAR</th>
-                        <th class="py-3 px-4 text-muted fw-bold text-center">ESTADO</th>
-                        <th class="py-3 px-4 text-muted fw-bold text-end">ACCIONES</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for evento in eventos %}
-                    <tr class="event-row" style="border-bottom: 1px solid rgba(255,255,255,0.05);">
-                        <td class="py-3 px-4 align-middle text-white fw-bold">{{ evento.nombre }}</td>
-                        <td class="py-3 px-4 align-middle text-muted">{{ evento.fecha }}</td>
-                        <td class="py-3 px-4 align-middle text-muted">{{ evento.lugar }}</td>
-                        <td class="py-3 px-4 align-middle text-center">
-                            <span class="badge bg-{% if evento.estado == 'Publicado' %}success{% else %}secondary{% endif %} bg-opacity-25 text-{% if evento.estado == 'Publicado' %}success{% else %}secondary{% endif %} border rounded-pill px-3">
-                                {{ evento.estado }}
-                            </span>
-                        </td>
-                        <td class="py-3 px-4 align-middle text-end">
-                            <button class="btn btn-sm btn-outline-danger btn-delete" title="Eliminar Evento">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3-fill" viewBox="0 0 16 16"><path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5Zm-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5ZM4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06Zm6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528ZM8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5Z"/></svg>
-                            </button>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-5">
+    <div>
+      <div class="section-badge" style="color:var(--amber)">
+        <span style="background:var(--amber);width:18px;height:2px;border-radius:1px;display:inline-block;box-shadow:0 0 6px rgba(251,191,36,.5)"></span>
+        🎟️ Control de Eventos
+      </div>
+      <h2 class="fw-bold mb-0" style="font-size:2rem;letter-spacing:-.03em">Gestionar Eventos</h2>
     </div>
+    <div class="d-flex gap-3 align-items-center flex-wrap">
+      <!-- Stats pills -->
+      <div style="display:flex;gap:10px">
+        <div style="background:rgba(34,211,165,.1);border:1px solid rgba(34,211,165,.25);border-radius:50px;padding:7px 16px;font-size:.82rem;font-weight:700;color:var(--green)">
+          ● Publicados: <span id="cnt-published">—</span>
+        </div>
+        <div style="background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.25);border-radius:50px;padding:7px 16px;font-size:.82rem;font-weight:700;color:var(--amber)">
+          ✏ Borradores: <span id="cnt-draft">—</span>
+        </div>
+      </div>
+      <button onclick="openCreateEventModal()"
+              class="btn-upload-master" style="font-size:.85rem;padding:11px 22px">
+        + Crear Evento
+      </button>
+    </div>
+  </div>
+
+  <!-- Filters bar -->
+  <div class="d-flex gap-3 mb-4 flex-wrap align-items-center">
+    <div style="position:relative;flex:1;min-width:220px;max-width:320px">
+      <svg style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--txt-3)" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/></svg>
+      <input type="text" id="ev-search" placeholder="Buscar evento..."
+             style="width:100%;background:rgba(255,255,255,.04);border:1px solid var(--b2);color:var(--txt-1);border-radius:50px;padding:10px 16px 10px 38px;font-family:var(--font);font-size:.88rem;outline:none;transition:all .25s"
+             onfocus="this.style.borderColor='var(--cyan-border)'" onblur="this.style.borderColor='var(--b2)'">
+    </div>
+    <select id="ev-filter" style="background:rgba(255,255,255,.04);border:1px solid var(--b2);color:var(--txt-1);border-radius:50px;padding:10px 36px 10px 18px;font-family:var(--font);font-size:.88rem;outline:none;cursor:pointer;appearance:none;background-image:url('data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'12\' fill=\'%235a6a8a\' viewBox=\'0 0 16 16\'%3E%3Cpath d=\'M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z\'/%3E%3C/svg%3E');background-repeat:no-repeat;background-position:calc(100% - 14px) center">
+      <option value="all">Todos</option>
+      <option value="Publicado">Publicados</option>
+      <option value="Borrador">Borradores</option>
+    </select>
+  </div>
+
+  <!-- Events table -->
+  <div class="premium-card p-0 overflow-hidden" style="border-color:rgba(251,191,36,.1)">
+    <div class="table-responsive">
+      <table class="table m-0" id="ev-table" style="background:transparent;color:var(--txt-1);border-collapse:collapse">
+        <thead>
+          <tr style="background:rgba(255,255,255,.02)">
+            <th style="padding:14px 20px;color:var(--txt-3);font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;border-bottom:1px solid var(--b1)">Evento</th>
+            <th style="padding:14px 20px;color:var(--txt-3);font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;border-bottom:1px solid var(--b1)">Fecha</th>
+            <th style="padding:14px 20px;color:var(--txt-3);font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;border-bottom:1px solid var(--b1)">Lugar</th>
+            <th style="padding:14px 20px;color:var(--txt-3);font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;border-bottom:1px solid var(--b1);text-align:center">Aforo</th>
+            <th style="padding:14px 20px;color:var(--txt-3);font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;border-bottom:1px solid var(--b1);text-align:center">Estado</th>
+            <th style="padding:14px 20px;color:var(--txt-3);font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;border-bottom:1px solid var(--b1);text-align:right">Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="ev-tbody">
+          {% for evento in eventos %}
+          <tr class="ev-row" style="border-bottom:1px solid var(--b1);transition:background .18s" data-estado="{{ evento.estado }}" data-nombre="{{ evento.nombre }}"
+              onmouseover="this.style.background='rgba(255,255,255,.02)'" onmouseout="this.style.background=''">
+            <td style="padding:14px 20px;vertical-align:middle">
+              <div style="display:flex;align-items:center;gap:12px">
+                <div style="width:40px;height:40px;border-radius:10px;flex-shrink:0;
+                            background:linear-gradient(135deg,rgba(251,191,36,.15),rgba(251,113,133,.1));
+                            display:flex;align-items:center;justify-content:center;font-size:1.1rem">🎟️</div>
+                <div>
+                  <div style="font-weight:700;font-size:.92rem">{{ evento.nombre }}</div>
+                  <div style="font-size:.76rem;color:var(--txt-3)">ID #{{ evento.id|default:forloop.counter }}</div>
+                </div>
+              </div>
+            </td>
+            <td style="padding:14px 20px;vertical-align:middle;color:var(--txt-2);font-size:.9rem">{{ evento.fecha }}</td>
+            <td style="padding:14px 20px;vertical-align:middle;color:var(--txt-2);font-size:.9rem">{{ evento.lugar }}</td>
+            <td style="padding:14px 20px;vertical-align:middle;text-align:center">
+              <span style="font-family:var(--font-mono);font-size:.85rem;font-weight:700;color:var(--txt-1)">{{ evento.aforo|default:"2,000" }}</span>
+            </td>
+            <td style="padding:14px 20px;vertical-align:middle;text-align:center">
+              <span class="ev-status-badge" data-status="{{ evento.estado }}"
+                    style="display:inline-block;font-size:.75rem;font-weight:700;padding:5px 14px;border-radius:50px;
+                    background:{% if evento.estado == 'Publicado' %}rgba(34,211,165,.12){% else %}rgba(255,255,255,.06){% endif %};
+                    color:{% if evento.estado == 'Publicado' %}var(--green){% else %}var(--txt-3){% endif %};
+                    border:1px solid {% if evento.estado == 'Publicado' %}rgba(34,211,165,.3){% else %}var(--b2){% endif %}">
+                {{ evento.estado }}
+              </span>
+            </td>
+            <td style="padding:14px 20px;vertical-align:middle;text-align:right">
+              <div style="display:flex;gap:8px;justify-content:flex-end">
+                <!-- Toggle publicar/borrador -->
+                <button class="btn-ev-toggle" title="Cambiar estado"
+                        style="width:34px;height:34px;border-radius:8px;border:1px solid var(--b2);background:rgba(255,255,255,.04);color:var(--txt-2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s"
+                        onmouseover="this.style.borderColor='var(--amber)';this.style.color='var(--amber)'"
+                        onmouseout="this.style.borderColor='var(--b2)';this.style.color='var(--txt-2)'">
+                  <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9z"/><path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5.002 5.002 0 0 0 8 3zM3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9H3.1z"/></svg>
+                </button>
+                <!-- Edit -->
+                <button title="Editar evento"
+                        style="width:34px;height:34px;border-radius:8px;border:1px solid var(--b2);background:rgba(255,255,255,.04);color:var(--txt-2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s"
+                        onmouseover="this.style.borderColor='var(--cyan-border)';this.style.color='var(--cyan)'"
+                        onmouseout="this.style.borderColor='var(--b2)';this.style.color='var(--txt-2)'"
+                        onclick="vibeToast('Abriendo editor de evento ✏️','info')">
+                  <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/></svg>
+                </button>
+                <!-- Delete -->
+                <button class="btn-ev-delete" title="Eliminar evento"
+                        style="width:34px;height:34px;border-radius:8px;border:1px solid var(--b2);background:rgba(255,255,255,.04);color:var(--txt-2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s"
+                        onmouseover="this.style.borderColor='var(--rose)';this.style.color='var(--rose)';this.style.background='rgba(251,113,133,.08)'"
+                        onmouseout="this.style.borderColor='var(--b2)';this.style.color='var(--txt-2)';this.style.background='rgba(255,255,255,.04)'">
+                  <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5Zm-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5Z"/></svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+          {% empty %}
+          <!-- Static fallback events -->
+          {% for ev in ev_list %}
+          {% empty %}
+          <tr class="ev-row" style="border-bottom:1px solid var(--b1);transition:background .18s" data-estado="Publicado" data-nombre="Quito Fest 2026" onmouseover="this.style.background='rgba(255,255,255,.02)'" onmouseout="this.style.background=''"><td style="padding:14px 20px;vertical-align:middle"><div style="display:flex;align-items:center;gap:12px"><div style="width:40px;height:40px;border-radius:10px;flex-shrink:0;background:linear-gradient(135deg,rgba(251,191,36,.15),rgba(251,113,133,.1));display:flex;align-items:center;justify-content:center;font-size:1.1rem">🎟️</div><div><div style="font-weight:700;font-size:.92rem">Quito Fest 2026</div><div style="font-size:.76rem;color:var(--txt-3)">ID #1</div></div></div></td><td style="padding:14px 20px;vertical-align:middle;color:var(--txt-2);font-size:.9rem">12 Ago 2026</td><td style="padding:14px 20px;vertical-align:middle;color:var(--txt-2);font-size:.9rem">Parque Bicentenario</td><td style="padding:14px 20px;vertical-align:middle;text-align:center"><span style="font-family:var(--font-mono);font-size:.85rem;font-weight:700;color:var(--txt-1)">15,000</span></td><td style="padding:14px 20px;vertical-align:middle;text-align:center"><span class="ev-status-badge" data-status="Publicado" style="display:inline-block;font-size:.75rem;font-weight:700;padding:5px 14px;border-radius:50px;background:rgba(34,211,165,.12);color:var(--green);border:1px solid rgba(34,211,165,.3)">Publicado</span></td><td style="padding:14px 20px;vertical-align:middle;text-align:right"><div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn-ev-toggle" style="width:34px;height:34px;border-radius:8px;border:1px solid var(--b2);background:rgba(255,255,255,.04);color:var(--txt-2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s" onmouseover="this.style.borderColor='var(--amber)';this.style.color='var(--amber)'" onmouseout="this.style.borderColor='var(--b2)';this.style.color='var(--txt-2)'"><svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9z"/><path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5.002 5.002 0 0 0 8 3zM3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9H3.1z"/></svg></button><button style="width:34px;height:34px;border-radius:8px;border:1px solid var(--b2);background:rgba(255,255,255,.04);color:var(--txt-2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s" onmouseover="this.style.borderColor='var(--cyan-border)';this.style.color='var(--cyan)'" onmouseout="this.style.borderColor='var(--b2)';this.style.color='var(--txt-2)'" onclick="vibeToast('Abriendo editor ✏️','info')"><svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/></svg></button><button class="btn-ev-delete" style="width:34px;height:34px;border-radius:8px;border:1px solid var(--b2);background:rgba(255,255,255,.04);color:var(--txt-2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s" onmouseover="this.style.borderColor='var(--rose)';this.style.color='var(--rose)';this.style.background='rgba(251,113,133,.08)'" onmouseout="this.style.borderColor='var(--b2)';this.style.color='var(--txt-2)';this.style.background='rgba(255,255,255,.04)'"><svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5Zm-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5Z"/></svg></button></div></td></tr>
+          <tr class="ev-row" style="border-bottom:1px solid var(--b1);transition:background .18s" data-estado="Publicado" data-nombre="VibeSync Live UI" onmouseover="this.style.background='rgba(255,255,255,.02)'" onmouseout="this.style.background=''"><td style="padding:14px 20px;vertical-align:middle"><div style="display:flex;align-items:center;gap:12px"><div style="width:40px;height:40px;border-radius:10px;flex-shrink:0;background:linear-gradient(135deg,rgba(0,229,255,.12),rgba(168,85,247,.1));display:flex;align-items:center;justify-content:center;font-size:1.1rem">🎟️</div><div><div style="font-weight:700;font-size:.92rem">VibeSync Live UI</div><div style="font-size:.76rem;color:var(--txt-3)">ID #2</div></div></div></td><td style="padding:14px 20px;vertical-align:middle;color:var(--txt-2);font-size:.9rem">05 Sep 2026</td><td style="padding:14px 20px;vertical-align:middle;color:var(--txt-2);font-size:.9rem">Teatro Sucre, Quito</td><td style="padding:14px 20px;vertical-align:middle;text-align:center"><span style="font-family:var(--font-mono);font-size:.85rem;font-weight:700;color:var(--txt-1)">1,500</span></td><td style="padding:14px 20px;vertical-align:middle;text-align:center"><span class="ev-status-badge" data-status="Publicado" style="display:inline-block;font-size:.75rem;font-weight:700;padding:5px 14px;border-radius:50px;background:rgba(34,211,165,.12);color:var(--green);border:1px solid rgba(34,211,165,.3)">Publicado</span></td><td style="padding:14px 20px;vertical-align:middle;text-align:right"><div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn-ev-toggle" style="width:34px;height:34px;border-radius:8px;border:1px solid var(--b2);background:rgba(255,255,255,.04);color:var(--txt-2);cursor:pointer;display:flex;align-items:center;justify-content:center" onmouseover="this.style.borderColor='var(--amber)'" onmouseout="this.style.borderColor='var(--b2)'"><svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9z"/><path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5.002 5.002 0 0 0 8 3zM3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9H3.1z"/></svg></button><button style="width:34px;height:34px;border-radius:8px;border:1px solid var(--b2);background:rgba(255,255,255,.04);color:var(--txt-2);cursor:pointer;display:flex;align-items:center;justify-content:center" onclick="vibeToast('Abriendo editor ✏️','info')"><svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/></svg></button><button class="btn-ev-delete" style="width:34px;height:34px;border-radius:8px;border:1px solid var(--b2);background:rgba(255,255,255,.04);color:var(--txt-2);cursor:pointer;display:flex;align-items:center;justify-content:center" onmouseover="this.style.borderColor='var(--rose)';this.style.background='rgba(251,113,133,.08)'" onmouseout="this.style.borderColor='var(--b2)';this.style.background='rgba(255,255,255,.04)'"><svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5Zm-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5Z"/></svg></button></div></td></tr>
+          <tr class="ev-row" style="border-bottom:1px solid var(--b1);transition:background .18s" data-estado="Borrador" data-nombre="FestivalFFF" onmouseover="this.style.background='rgba(255,255,255,.02)'" onmouseout="this.style.background=''"><td style="padding:14px 20px;vertical-align:middle"><div style="display:flex;align-items:center;gap:12px"><div style="width:40px;height:40px;border-radius:10px;flex-shrink:0;background:rgba(255,255,255,.05);display:flex;align-items:center;justify-content:center;font-size:1.1rem">🎟️</div><div><div style="font-weight:700;font-size:.92rem">FestivalFFF</div><div style="font-size:.76rem;color:var(--txt-3)">ID #3</div></div></div></td><td style="padding:14px 20px;vertical-align:middle;color:var(--txt-2);font-size:.9rem">20 Nov 2026</td><td style="padding:14px 20px;vertical-align:middle;color:var(--txt-2);font-size:.9rem">Ambato</td><td style="padding:14px 20px;vertical-align:middle;text-align:center"><span style="font-family:var(--font-mono);font-size:.85rem;font-weight:700;color:var(--txt-1)">800</span></td><td style="padding:14px 20px;vertical-align:middle;text-align:center"><span class="ev-status-badge" data-status="Borrador" style="display:inline-block;font-size:.75rem;font-weight:700;padding:5px 14px;border-radius:50px;background:rgba(255,255,255,.06);color:var(--txt-3);border:1px solid var(--b2)">Borrador</span></td><td style="padding:14px 20px;vertical-align:middle;text-align:right"><div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn-ev-toggle" style="width:34px;height:34px;border-radius:8px;border:1px solid var(--b2);background:rgba(255,255,255,.04);color:var(--txt-2);cursor:pointer;display:flex;align-items:center;justify-content:center" onmouseover="this.style.borderColor='var(--amber)'" onmouseout="this.style.borderColor='var(--b2)'"><svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9z"/><path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5.002 5.002 0 0 0 8 3zM3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9H3.1z"/></svg></button><button style="width:34px;height:34px;border-radius:8px;border:1px solid var(--b2);background:rgba(255,255,255,.04);color:var(--txt-2);cursor:pointer;display:flex;align-items:center;justify-content:center" onclick="vibeToast('Abriendo editor ✏️','info')"><svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/></svg></button><button class="btn-ev-delete" style="width:34px;height:34px;border-radius:8px;border:1px solid var(--b2);background:rgba(255,255,255,.04);color:var(--txt-2);cursor:pointer;display:flex;align-items:center;justify-content:center" onmouseover="this.style.borderColor='var(--rose)';this.style.background='rgba(251,113,133,.08)'" onmouseout="this.style.borderColor='var(--b2)';this.style.background='rgba(255,255,255,.04)'"><svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5Zm-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5Z"/></svg></button></div></td></tr>
+          {% endempty %}
+          {% endfor %}
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div style="padding:12px 20px;border-top:1px solid var(--b1);font-size:.82rem;color:var(--txt-3);display:flex;align-items:center;justify-content:space-between">
+      <span>Mostrando <span id="ev-visible-count">—</span> evento(s)</span>
+      <span style="color:var(--txt-3)">Total en sistema: {{ eventos|length|default:"3" }}</span>
+    </div>
+  </div>
+</div>
+
+<!-- ── CREATE EVENT MODAL ── -->
+<div id="create-event-modal" style="display:none" class="modal-overlay" onclick="if(event.target===this)closeEvModal()">
+  <div class="modal-box" style="max-width:600px">
+    <div class="modal-header" style="border-bottom:1px solid var(--b1)">
+      <div>
+        <h5 class="fw-bold mb-1" style="background:linear-gradient(135deg,var(--amber),var(--rose));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Crear Nuevo Evento</h5>
+        <p style="color:var(--txt-3);font-size:.82rem;margin:0">Completa los datos del concierto o festival</p>
+      </div>
+      <button class="modal-close" onclick="closeEvModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="row g-3">
+        <div class="col-12">
+          <label class="premium-label">Nombre del evento *</label>
+          <input type="text" id="ev-new-name" class="premium-input form-control" placeholder="Ej. Festival Synthwave Andino 2026">
+        </div>
+        <div class="col-md-6">
+          <label class="premium-label">Fecha *</label>
+          <input type="date" id="ev-new-date" class="premium-input form-control">
+        </div>
+        <div class="col-md-6">
+          <label class="premium-label">Aforo *</label>
+          <input type="number" id="ev-new-aforo" class="premium-input form-control" placeholder="2000">
+        </div>
+        <div class="col-12">
+          <label class="premium-label">Lugar *</label>
+          <input type="text" id="ev-new-lugar" class="premium-input form-control" placeholder="Ej. Teatro San Gabriel, Quito">
+        </div>
+        <div class="col-md-6">
+          <label class="premium-label">Ciudad</label>
+          <input type="text" id="ev-new-ciudad" class="premium-input form-control" placeholder="Quito">
+        </div>
+        <div class="col-md-6">
+          <label class="premium-label">Estado inicial</label>
+          <select id="ev-new-estado" class="premium-input form-select" style="background-color:rgba(255,255,255,.04);color:var(--txt-1)">
+            <option style="background:var(--bg-surface);color:var(--txt-1)" value="Borrador">Borrador</option>
+            <option style="background:var(--bg-surface);color:var(--txt-1)" value="Publicado">Publicar inmediatamente</option>
+          </select>
+        </div>
+        <div class="col-12">
+          <label class="premium-label">Descripción</label>
+          <textarea id="ev-new-desc" class="premium-input form-control" rows="3" placeholder="Descripción del evento..."></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button onclick="closeEvModal()" style="background:rgba(255,255,255,.05);border:1px solid var(--b2);color:var(--txt-2);border-radius:50px;padding:9px 20px;font-family:var(--font);font-weight:600;font-size:.88rem;cursor:pointer">Cancelar</button>
+      <button onclick="confirmCreateEvent()" class="btn-upload-master" style="font-size:.88rem;padding:10px 24px">🚀 Crear Evento</button>
+    </div>
+  </div>
 </div>
 
 <script>
-document.getElementById('events-table').addEventListener('click', function(e) {
-    const btn = e.target.closest('.btn-delete');
-    if (btn) {
-        const row = btn.closest('tr');
-        if(confirm('¿Seguro que deseas eliminar este evento? Esta acción no se puede deshacer.')) {
-            row.style.transition = 'opacity 0.3s ease';
-            row.style.opacity = '0';
-            setTimeout(() => row.remove(), 300);
-        }
+document.addEventListener('DOMContentLoaded',()=>{
+  updateEvCounts();
+
+  // Search & filter
+  const search = document.getElementById('ev-search');
+  const filter = document.getElementById('ev-filter');
+
+  function filterEvents() {
+    const q = search?.value.toLowerCase().trim() || '';
+    const f = filter?.value || 'all';
+    let visible = 0;
+    document.querySelectorAll('.ev-row').forEach(row => {
+      const name   = (row.dataset.nombre || '').toLowerCase();
+      const estado = row.dataset.estado || '';
+      const matchQ = q === '' || name.includes(q);
+      const matchF = f === 'all' || estado === f;
+      row.style.display = (matchQ && matchF) ? '' : 'none';
+      if(matchQ && matchF) visible++;
+    });
+    const vc = document.getElementById('ev-visible-count');
+    if(vc) vc.textContent = visible;
+  }
+
+  search?.addEventListener('input', filterEvents);
+  filter?.addEventListener('change', filterEvents);
+  filterEvents();
+
+  // Delete / Toggle
+  document.getElementById('ev-tbody')?.addEventListener('click', e => {
+    const row = e.target.closest('.ev-row');
+    if(!row) return;
+
+    if(e.target.closest('.btn-ev-delete')) {
+      const name = row.dataset.nombre;
+      if(!confirm(`¿Eliminar el evento "${name}"? Esta acción es irreversible.`)) return;
+      row.style.transition='opacity .3s,transform .3s';
+      row.style.opacity='0';row.style.transform='translateX(30px)';
+      setTimeout(()=>{row.remove();updateEvCounts();filterEvents();},320);
+      vibeToast(`Evento "${name}" eliminado`,'error');
     }
+
+    if(e.target.closest('.btn-ev-toggle')) {
+      const badge  = row.querySelector('.ev-status-badge');
+      const isPub  = badge.dataset.status === 'Publicado';
+      const newS   = isPub ? 'Borrador' : 'Publicado';
+      badge.dataset.status = newS;
+      row.dataset.estado   = newS;
+      if(newS === 'Publicado') {
+        badge.style.cssText='display:inline-block;font-size:.75rem;font-weight:700;padding:5px 14px;border-radius:50px;background:rgba(34,211,165,.12);color:var(--green);border:1px solid rgba(34,211,165,.3)';
+      } else {
+        badge.style.cssText='display:inline-block;font-size:.75rem;font-weight:700;padding:5px 14px;border-radius:50px;background:rgba(255,255,255,.06);color:var(--txt-3);border:1px solid var(--b2)';
+      }
+      badge.textContent = newS;
+      updateEvCounts();
+      vibeToast(newS==='Publicado'?'Evento publicado ✅':'Vuelto a borrador','success');
+    }
+  });
 });
+
+function updateEvCounts() {
+  let pub=0, draft=0;
+  document.querySelectorAll('.ev-row').forEach(r => {
+    if(r.dataset.estado==='Publicado') pub++;
+    else draft++;
+  });
+  const cp=document.getElementById('cnt-published'), cd=document.getElementById('cnt-draft');
+  if(cp) cp.textContent=pub;
+  if(cd) cd.textContent=draft;
+  const vc=document.getElementById('ev-visible-count');
+  if(vc) vc.textContent=pub+draft;
+}
+
+function openCreateEventModal() {
+  document.getElementById('create-event-modal').style.display='flex';
+}
+function closeEvModal() {
+  const m=document.getElementById('create-event-modal');
+  m.style.opacity='0';m.style.transition='opacity .25s';
+  setTimeout(()=>{m.style.display='none';m.style.opacity='';m.style.transition='';},260);
+}
+function confirmCreateEvent() {
+  const name   = document.getElementById('ev-new-name')?.value.trim();
+  const date   = document.getElementById('ev-new-date')?.value;
+  const lugar  = document.getElementById('ev-new-lugar')?.value.trim();
+  const aforo  = document.getElementById('ev-new-aforo')?.value;
+  const estado = document.getElementById('ev-new-estado')?.value || 'Borrador';
+
+  if(!name || !date || !lugar) { vibeToast('Completa los campos obligatorios','error'); return; }
+
+  const tbody = document.getElementById('ev-tbody');
+  const id    = Date.now();
+  const isPub = estado === 'Publicado';
+  const row   = document.createElement('tr');
+  row.className = 'ev-row';
+  row.dataset.estado = estado;
+  row.dataset.nombre = name;
+  row.style.animation = 'fade-up .4s cubic-bezier(0,0,0.2,1) both';
+  row.style.borderBottom = '1px solid var(--b1)';
+  const dateStr = date ? new Date(date).toLocaleDateString('es-EC',{day:'numeric',month:'short',year:'numeric'}) : '—';
+  row.innerHTML = `
+    <td style="padding:14px 20px;vertical-align:middle"><div style="display:flex;align-items:center;gap:12px"><div style="width:40px;height:40px;border-radius:10px;flex-shrink:0;background:linear-gradient(135deg,rgba(251,191,36,.15),rgba(251,113,133,.1));display:flex;align-items:center;justify-content:center;font-size:1.1rem">🎟️</div><div><div style="font-weight:700;font-size:.92rem">${name}</div><div style="font-size:.76rem;color:var(--txt-3)">ID #${id}</div></div></div></td>
+    <td style="padding:14px 20px;vertical-align:middle;color:var(--txt-2);font-size:.9rem">${dateStr}</td>
+    <td style="padding:14px 20px;vertical-align:middle;color:var(--txt-2);font-size:.9rem">${lugar}</td>
+    <td style="padding:14px 20px;vertical-align:middle;text-align:center"><span style="font-family:var(--font-mono);font-size:.85rem;font-weight:700">${aforo||'—'}</span></td>
+    <td style="padding:14px 20px;vertical-align:middle;text-align:center"><span class="ev-status-badge" data-status="${estado}" style="display:inline-block;font-size:.75rem;font-weight:700;padding:5px 14px;border-radius:50px;background:${isPub?'rgba(34,211,165,.12)':'rgba(255,255,255,.06)'};color:${isPub?'var(--green)':'var(--txt-3)'};border:1px solid ${isPub?'rgba(34,211,165,.3)':'var(--b2)'}">${estado}</span></td>
+    <td style="padding:14px 20px;vertical-align:middle;text-align:right"><div style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn-ev-toggle" style="width:34px;height:34px;border-radius:8px;border:1px solid var(--b2);background:rgba(255,255,255,.04);color:var(--txt-2);cursor:pointer;display:flex;align-items:center;justify-content:center" onmouseover="this.style.borderColor='var(--amber)'" onmouseout="this.style.borderColor='var(--b2)'"><svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9z"/><path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5.002 5.002 0 0 0 8 3zM3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9H3.1z"/></svg></button>
+      <button class="btn-ev-delete" style="width:34px;height:34px;border-radius:8px;border:1px solid var(--b2);background:rgba(255,255,255,.04);color:var(--txt-2);cursor:pointer;display:flex;align-items:center;justify-content:center" onmouseover="this.style.borderColor='var(--rose)';this.style.background='rgba(251,113,133,.08)'" onmouseout="this.style.borderColor='var(--b2)';this.style.background='rgba(255,255,255,.04)'"><svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5Zm-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5Z"/></svg></button>
+    </div></td>
+  `;
+  tbody.prepend(row);
+  updateEvCounts();
+  closeEvModal();
+  vibeToast(`Evento "${name}" creado ✅`,'success');
+  // Clear form
+  ['ev-new-name','ev-new-date','ev-new-lugar','ev-new-aforo','ev-new-ciudad','ev-new-desc'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+}
 </script>
 {% endblock %}
